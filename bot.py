@@ -1,5 +1,5 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
-import logging
+import os, logging
 
 TELEGRAM_TOKEN = os.environ['TELEGRAM_TOKEN']
 
