@@ -15,19 +15,19 @@ def start(update, context):
     update.message.reply_text(f'Hallo {update.effective_user.first_name}')
 
 def eetlijst(update, context):
-    update.message.reply_text(f'{eetlijst()}')
+    update.message.reply_text(eetlijst())
 
 def kok(update, context):
-    update.message.reply_text(f'{kok()}')
+    update.message.reply_text(str(kok()))
 
 def kookpunten(update, context):
-    update.message.reply_text(f'{kookpunten()}')
+    update.message.reply_text(f'p{kookpunten()}')
 
 def kosten(update, context):
-    update.message.reply_text(f'{kosten()}')
+    update.message.reply_text(f'k{kosten()}')
 
 def verhouding(update, context):
-    update.message.reply_text(f'{verhouding()}')
+    update.message.reply_text(f'v{verhouding()}')
 
 def unknown(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id, text="Sorry, dat commando begreep ik niet.")
