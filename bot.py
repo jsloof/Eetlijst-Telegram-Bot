@@ -1,7 +1,7 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 import os, logging
 
-#from beautifulsoup4 import BeautifulSoup
+from bs4 import BeautifulSoup
 #import requests, re
 
 TELEGRAM_TOKEN = os.environ['TELEGRAM_TOKEN']
