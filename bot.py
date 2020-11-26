@@ -12,19 +12,19 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 def start(update, context):
     update.message.reply_text(f'Hallo {update.effective_user.first_name}')
 
-def eetlijst_handler(update, context):
+def eetlijst(update, context):
     update.message.reply_text(f'{rp.eetlijst()}')
 
-def kok_handler(update, context):
+def kok(update, context):
     update.message.reply_text(f'{rp.kok()}')
 
 def kookpunten(update, context):
     update.message.reply_text(f'{rp.kookpunten()}')
 
-def kosten_handler(update, context):
+def kosten(update, context):
     update.message.reply_text(f'{rp.kosten()}')
 
-def verhouding_handler(update, context):
+def verhouding(update, context):
     update.message.reply_text(f'{rp.verhouding()}')
 
 def unknown(update, context):
