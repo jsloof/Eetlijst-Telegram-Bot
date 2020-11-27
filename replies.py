@@ -1,6 +1,6 @@
 from parser import Parser
 
-def array_to_string(array):
+def array_to_string(array: list) -> str:
     str(array).replace('[','').replace('\'','').replace(']','')
 
 def eetlijst():
@@ -32,12 +32,12 @@ def kok():
     cook = ps.get_cook()
     if len(cook) == 0:
         zipped = str(dict(zip(ps.get_ratio(), ps.get_names())))
-        reply += "Wie wil er koken? Dit is de verhouding koken/eten:\n"
+        reply = "Wie wil er koken? Dit is de verhouding koken/eten:\n"
         reply += zipped.replace('{','<code>').replace(': \'','</code> (').replace('\', ',')\n<code>').replace('\'}',')')
     elif len(cook) == 1:
-        reply += array_to_string(cook) + " gaat koken."
+        reply = array_to_string(cook) + " gaat koken."
     else:
-        reply += array_to_string(cook) + " gaan koken."
+        reply = array_to_string(cook) + " gaan koken."
     return reply
 
 def kookpunten():
