@@ -12,13 +12,10 @@ dispatcher = updater.dispatcher
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
-def start_callback(update, context):
-    update.message.reply_text(f'Hallo {update.effective_user.first_name}')
-
 def error_callback(update, context):
-    # we want to notify the user of this problem. This will always work, but not notify users if the update is an
-    # callback or inline query, or a poll update. In case you want this, keep in mind that sending the message
-    # could fail
+    # We want to notify the user of this problem. This will always work,
+    # but not notify users if the update is callback or inline query, or a poll update.
+    # In case you want this, keep in mind that sending the message could fail.
     if update.effective_message:
         text = "Hallo. Er is helaas een fout opgetreden bij het verwerken van uw verzoek. " \
                "Mijn ontwikkelaar wordt op de hoogte gesteld."
@@ -42,12 +39,14 @@ def error_callback(update, context):
     if update.poll:
         payload += f' with the poll id {update.poll.id}.'
     # lets put this in a "well" formatted text
-    text = f"Hey.\nThe error <code>{context.error}</code> happened{payload}. The full traceback:\n\n<code>{trace}" \
-           f"</code>"
+    text = f"Hey.\nThe error <code>{context.error}</code> happened{payload}. The full traceback:\n\n<code>{trace}</code>"
     # and send it to the dev
     context.bot.send_message(TELEGRAM_DEV_ID, text, parse_mode=ParseMode.HTML)
     # we raise the error again, so the logger module catches it. If you don't use the logger module, use it.
     raise
+
+def start_callback(update, context):
+    update.message.reply_text(f'Hallo {update.effective_user.first_name}')
 
 def eetlijst_callback(update, context):
     context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
@@ -93,7 +92,8 @@ dispatcher.add_handler(kookpunten_handler)
 dispatcher.add_handler(kosten_handler)
 dispatcher.add_handler(verhouding_handler)
 dispatcher.add_handler(schreeuw_handler)
-dispatcher.add_handler(unknown_handler) # This handler must be added last
+# The unknown_handler must be added last.
+dispatcher.add_handler(unknown_handler)
 
 updater.start_polling()
 updater.idle()

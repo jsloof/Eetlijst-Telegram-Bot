@@ -1,6 +1,6 @@
 from parser import Parser
 
-def array_to_string(array: list) -> str:
+def array_to_string(array):
     str(array).replace('[','').replace('\'','').replace(']','')
 
 def eetlijst():
