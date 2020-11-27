@@ -9,9 +9,9 @@ def eetlijst():
     if len(cook) == 0:
         reply = "Er gaat nog niemand koken.\n"
     elif len(cook) == 1:
-        reply = f"{array_to_string(cook)} gaat koken.\n"
+        reply = "%s gaat koken.\n" % array_to_string(cook)
     else:
-        reply = f"{array_to_string(cook)} gaan koken.\n"
+        reply = "%s gaan koken.\n" % array_to_string(cook)
     if len(eaters) > 0:
         reply += f"{array_to_string(eaters)}"
         if len(eaters) == 1:
@@ -34,9 +34,9 @@ def kok():
         reply = "Er gaat nog niemand koken, maar dit is de verhouding koken/eten:\n"
         reply += zipped.replace('{','<code>').replace(': \'','</code> (').replace('\', ',')\n<code>').replace('\'}',')')
     elif len(cook) == 1:
-        reply = f"{array_to_string(cook)} gaat koken."
+        reply = "%s gaat koken." % array_to_string(cook)
     else:
-        reply = f"{array_to_string(cook)} gaan koken."
+        reply = "%s gaan koken." % array_to_string(cook)
     return reply
 
 def kookpunten():
