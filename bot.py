@@ -113,7 +113,7 @@ def kosten():
 def verhouding():
     ps = Parser()
     zipped = str(dict(zip(ps.get_ratio(), ps.get_names())))
-    reply = zipped.replace('{\'','<b>Verhouding koken/eten:</b>\n<code>').replace('\': \'','</code> (').replace('\', \'',')\n<code>').replace('\'}',')')
+    reply = zipped.replace('{','<b>Verhouding koken/eten:</b>\n<code>').replace(': \'','</code> (').replace('\', ',')\n<code>').replace('\'}',')')
     return reply
 
 class Parser:
@@ -185,8 +185,7 @@ class Parser:
         list_costs = []
         all_costs = self.soup_kosten_site.find('td', text='  Kookt gemiddeld voor (p.p.)').parent.find_all('td', class_="r")[0:-1]
         for i in range(len(all_costs)):
-            costs = float(all_costs[i].text.replace(',','.'))
-            list_costs.append(round(costs, 2))
+            list_costs.append(all_costs[i].text)
         return list_costs if person == None else list_costs[person]
 
     # Get the names
