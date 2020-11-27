@@ -15,10 +15,23 @@ def start(update, context):
     update.message.reply_text(f'Hallo {update.effective_user.first_name}')
 
 def eetlijst(update, context):
-    update.message.reply_text(eetlijst())
+    ps = Parser()
+    reply = ""
+    if ps.get_eetlijst()[1] != []:
+        reply += str(ps.get_eetlijst()[1]) + " gaat koken.\n"
+    if ps.get_eetlijst()[0] != []:
+        reply += str(ps.get_eetlijst()[0]) + " eten mee.\n"
+    if ps.get_eetlijst()[3] != []:
+        reply += str(ps.get_eetlijst()[3]) + " moeten zich nog inschrijven."
+    update.message.reply_text(reply)
 
 def kok(update, context):
-    update.message.reply_text(str(kok()))
+    ps = Parser()
+    if ps.get_eetlijst()[1] != []:
+        reply = str(ps.get_eetlijst()[1]) + " gaat koken."
+    else:
+        reply = "Wie wil er koken?"
+    context.bot.send_message(chat_id=update.effective_chat.id, text=reply)
 
 def kookpunten(update, context):
     update.message.reply_text(f'p{kookpunten()}')
@@ -57,9 +70,9 @@ def eetlijst():
     if ps.get_eetlijst()[1] != []:
         reply += str(ps.get_eetlijst()[1]) + " gaat koken.\n"
     if ps.get_eetlijst()[0] != []:
-        reply += str(ps.get_eetlijst()[1]) + " eten mee.\n"
+        reply += str(ps.get_eetlijst()[0]) + " eten mee.\n"
     if ps.get_eetlijst()[3] != []:
-        reply += str(ps.get_eetlijst()[1]) + " moeten zich nog inschrijven."
+        reply += str(ps.get_eetlijst()[3]) + " moeten zich nog inschrijven."
     return reply
 
 def kok():
