@@ -6,21 +6,20 @@ def array_to_string(array: list) -> str:
 def eetlijst():
     ps = Parser()
     eaters, cook, absent, unknown = ps.get_eetlijst()
-    reply = ""
     if len(cook) == 0:
-        reply += "Er gaat nog niemand koken.\n"
+        reply = "Er gaat nog niemand koken.\n"
     elif len(cook) == 1:
-        reply += array_to_string(cook) + " gaat koken.\n"
+        reply = f"{array_to_string(cook)} gaat koken.\n"
     else:
-        reply += array_to_string(cook) + " gaan koken.\n"
+        reply = f"{array_to_string(cook)} gaan koken.\n"
     if len(eaters) > 0:
-        reply += array_to_string(eaters)
+        reply += f"{array_to_string(eaters)}"
         if len(eaters) == 1:
             reply += " eet mee.\n"
         else:
             reply += " eten mee.\n"
     if len(unknown) > 0:
-        reply += array_to_string(unknown)
+        reply += f"{array_to_string(unknown)}"
         if len(unknown) == 1:
             reply += " moet zich nog inschrijven.\n"
         else:
@@ -32,12 +31,12 @@ def kok():
     cook = ps.get_cook()
     if len(cook) == 0:
         zipped = str(dict(zip(ps.get_ratio(), ps.get_names())))
-        reply = "Wie wil er koken? Dit is de verhouding koken/eten:\n"
+        reply = "Er gaat nog niemand koken, maar dit is de verhouding koken/eten:\n"
         reply += zipped.replace('{','<code>').replace(': \'','</code> (').replace('\', ',')\n<code>').replace('\'}',')')
     elif len(cook) == 1:
-        reply = array_to_string(cook) + " gaat koken."
+        reply = f"{array_to_string(cook)} gaat koken."
     else:
-        reply = array_to_string(cook) + " gaan koken."
+        reply = f"{array_to_string(cook)} gaan koken."
     return reply
 
 def kookpunten():

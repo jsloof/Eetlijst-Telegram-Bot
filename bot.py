@@ -55,7 +55,7 @@ def eetlijst_callback(update, context):
 
 def kok_callback(update, context):
     context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
-    update.message.reply_text(replies.kok())
+    context.bot.send_message(chat_id=update.effective_chat.id, text=replies.kok(), parse_mode=ParseMode.HTML)
 
 def kookpunten_callback(update, context):
     context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
