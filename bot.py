@@ -1,6 +1,5 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from telegram import ChatAction, ParseMode
-from functools import wraps
 import os, logging
 
 from bs4 import BeautifulSoup
@@ -13,12 +12,11 @@ dispatcher = updater.dispatcher
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
-@send_typing_action
 def start(update, context):
     update.message.reply_text(f'Hallo {update.effective_user.first_name}')
 
-@send_typing_action
 def eetlijst(update, context):
+    bot.send_chat_action(chat_id=chat_id, action=ChatAction.TYPING)
     ps = Parser()
     reply = ""
     if ps.get_eetlijst()[1] != []:
@@ -29,8 +27,8 @@ def eetlijst(update, context):
         reply += str(ps.get_eetlijst()[3]) + " moeten zich nog inschrijven."
     update.message.reply_text(reply)
 
-@send_typing_action
 def kok(update, context):
+    bot.send_chat_action(chat_id=chat_id, action=ChatAction.TYPING)
     ps = Parser()
     if ps.get_eetlijst()[1] != []:
         reply = str(ps.get_eetlijst()[1]) + " gaat koken."
@@ -38,37 +36,25 @@ def kok(update, context):
         reply = "Wie wil er koken?"
     context.bot.send_message(chat_id=update.effective_chat.id, text=reply)
 
-@send_typing_action
 def kookpunten(update, context):
+    bot.send_chat_action(chat_id=chat_id, action=ChatAction.TYPING)
     update.message.reply_text(f'p{kookpunten()}')
 
-@send_typing_action
 def kosten(update, context):
+    bot.send_chat_action(chat_id=chat_id, action=ChatAction.TYPING)
     update.message.reply_text(f'k{kosten()}')
 
-@send_typing_action
 def verhouding(update, context):
+    bot.send_chat_action(chat_id=chat_id, action=ChatAction.TYPING)
     context.bot.send_message(chat_id=update.effective_chat.id, text=reply, parse_mode=ParseMode.HTML)
     update.message.reply_text(f'v{verhouding()}')
 
-@send_typing_action
 def schreeuw(update, context):
     if update.message.text == update.message.text.upper():
         update.message.reply_text('JE HOEFT NIET ZO TE SCHREEUWEN!!1')
 
-@send_typing_action
 def unknown(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id, text="Sorry, dat commando begreep ik niet.")
-
-def send_typing_action(func):
-    """Sends typing action while processing func command."""
-
-    @wraps(func)
-    def command_func(update, context, *args, **kwargs):
-        context.bot.send_chat_action(chat_id=update.effective_message.chat_id, action=ChatAction.TYPING)
-        return func(update, context,  *args, **kwargs)
-
-    return command_func
 
 def eetlijst():
     ps = Parser()
