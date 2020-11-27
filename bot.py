@@ -45,25 +45,6 @@ def verhouding(update, context):
 def unknown(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id, text="Sorry, dat commando begreep ik niet.")
 
-start_handler = CommandHandler('start', start)
-eetlijst_handler = CommandHandler('eetlijst', eetlijst)
-kok_handler = CommandHandler('kok', kok)
-kookpunten_handler = CommandHandler('kookpunten', kookpunten)
-kosten_handler = CommandHandler('kosten', kosten)
-verhouding_handler = CommandHandler('verhouding', verhouding)
-unknown_handler = MessageHandler(Filters.command, unknown)
-
-dispatcher.add_handler(start_handler)
-dispatcher.add_handler(eetlijst_handler)
-dispatcher.add_handler(kok_handler)
-dispatcher.add_handler(kookpunten_handler)
-dispatcher.add_handler(kosten_handler)
-dispatcher.add_handler(verhouding_handler)
-dispatcher.add_handler(unknown_handler) # This handler must be added last
-
-updater.start_polling()
-updater.idle()
-
 def eetlijst():
     ps = Parser()
     reply = ""
@@ -189,3 +170,22 @@ class Parser:
         for i in range(len(all_points)):
             list_points.append(all_points[i].text)
         return list_points if person == None else list_points[person]
+
+start_handler = CommandHandler('start', start)
+eetlijst_handler = CommandHandler('eetlijst', eetlijst)
+kok_handler = CommandHandler('kok', kok)
+kookpunten_handler = CommandHandler('kookpunten', kookpunten)
+kosten_handler = CommandHandler('kosten', kosten)
+verhouding_handler = CommandHandler('verhouding', verhouding)
+unknown_handler = MessageHandler(Filters.command, unknown)
+
+dispatcher.add_handler(start_handler)
+dispatcher.add_handler(eetlijst_handler)
+dispatcher.add_handler(kok_handler)
+dispatcher.add_handler(kookpunten_handler)
+dispatcher.add_handler(kosten_handler)
+dispatcher.add_handler(verhouding_handler)
+dispatcher.add_handler(unknown_handler) # This handler must be added last
+
+updater.start_polling()
+updater.idle()
