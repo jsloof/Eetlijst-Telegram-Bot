@@ -140,13 +140,13 @@ class Parser:
         self.values = {'login': self.EETLIJST_USER, 'pass': self.EETLIJST_PASS}
 
         self.main_page = requests.post(self.login_url, data=self.values)
-        self.soup_main_page = BeautifulSoup(self.main_page.content, "lxml")
+        self.soup_main_page = BeautifulSoup(self.main_page.content, "html.parser")
 
         self.kosten_url = self.soup_main_page.find_all('a')[2]['href']
         self.session_id = re.split('\W', self.kosten_url)[-1]
 
         self.kosten_page = requests.get('http://eetlijst.nl/' + self.kosten_url)
-        self.soup_kosten_site = BeautifulSoup(self.kosten_page.content, "lxml")
+        self.soup_kosten_site = BeautifulSoup(self.kosten_page.content, "html.parser")
 
         self.today_status = self.soup_main_page.find_all('td', class_='r')
 
