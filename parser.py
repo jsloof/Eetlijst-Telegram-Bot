@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-import requests, re, os
+import os, re, requests
 
 class Parser:
 
@@ -11,13 +11,13 @@ class Parser:
         self.values = {'login': self.EETLIJST_USER, 'pass': self.EETLIJST_PASS}
 
         self.main_page = requests.post(self.login_url, data=self.values)
-        self.soup_main_page = BeautifulSoup(self.main_page.content, "lxml")
+        self.soup_main_page = BeautifulSoup(self.main_page.content, "html.parser")
 
         self.kosten_url = self.soup_main_page.find_all('a')[2]['href']
         self.session_id = re.split('\W', self.kosten_url)[-1]
 
         self.kosten_page = requests.get('http://eetlijst.nl/' + self.kosten_url)
-        self.soup_kosten_site = BeautifulSoup(self.kosten_page.content, "lxml")
+        self.soup_kosten_site = BeautifulSoup(self.kosten_page.content, "html.parser")
 
         self.today_status = self.soup_main_page.find_all('td', class_='r')
 
@@ -70,8 +70,7 @@ class Parser:
         list_costs = []
         all_costs = self.soup_kosten_site.find('td', text='  Kookt gemiddeld voor (p.p.)').parent.find_all('td', class_="r")[0:-1]
         for i in range(len(all_costs)):
-            costs = float(all_costs[i].text.replace(',','.'))
-            list_costs.append(round(costs, 2))
+            list_costs.append(all_costs[i].text.strip())
         return list_costs if person == None else list_costs[person]
 
     # Get the names
@@ -79,7 +78,7 @@ class Parser:
         list_names = []
         all_names = self.soup_kosten_site.find('th', colspan='3').parent.find_all('th')[1:-1]
         for i in range(len(all_names)):
-            list_names.append(all_names[i].text)
+            list_names.append(all_names[i].text.strip())
         return list_names if person == None else list_names[person]
 
     #Get the cooking points
@@ -87,5 +86,5 @@ class Parser:
         list_points = []
         all_points = self.soup_kosten_site.find_all('td', class_="l", colspan='3')[-1].parent.find_all('td', class_="r")[0:-1]
         for i in range(len(all_points)):
-            list_points.append(all_points[i].text)
+            list_points.append(all_points[i].text.strip())
         return list_points if person == None else list_points[person]
