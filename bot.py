@@ -53,7 +53,7 @@ def error_callback(update, context):
     raise
 
 def eetlijst_callback(update, context):
-    bot.send_chat_action(chat_id=chat_id, action=ChatAction.TYPING)
+    context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
     ps = Parser()
     reply = ""
     if ps.get_eetlijst()[1] != []:
@@ -65,7 +65,7 @@ def eetlijst_callback(update, context):
     update.message.reply_text(reply)
 
 def kok_callback(update, context):
-    bot.send_chat_action(chat_id=chat_id, action=ChatAction.TYPING)
+    context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
     ps = Parser()
     if ps.get_eetlijst()[1] != []:
         reply = str(ps.get_eetlijst()[1]) + " gaat koken."
@@ -74,15 +74,15 @@ def kok_callback(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id, text=reply)
 
 def kookpunten_callback(update, context):
-    bot.send_chat_action(chat_id=chat_id, action=ChatAction.TYPING)
+    context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
     update.message.reply_text(f'p{kookpunten()}')
 
 def kosten_callback(update, context):
-    bot.send_chat_action(chat_id=chat_id, action=ChatAction.TYPING)
+    context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
     update.message.reply_text(f'k{kosten()}')
 
 def verhouding_callback(update, context):
-    bot.send_chat_action(chat_id=chat_id, action=ChatAction.TYPING)
+    context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
     context.bot.send_message(chat_id=update.effective_chat.id, text=reply, parse_mode=ParseMode.HTML)
     update.message.reply_text(f'v{verhouding()}')
 
