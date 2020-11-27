@@ -1,9 +1,8 @@
-from parser import Parser
 from telegram import ChatAction, ParseMode
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from telegram.error import TelegramError, Unauthorized, BadRequest, TimedOut, ChatMigrated, NetworkError
 from telegram.utils.helpers import mention_html
-import logging, os, sys, traceback
+import logging, os, replies, sys, traceback
 
 TELEGRAM_TOKEN = os.environ['TELEGRAM_TOKEN']
 TELEGRAM_DEV_ID = os.environ['TELEGRAM_DEV_ID']
@@ -52,23 +51,23 @@ def error_callback(update, context):
 
 def eetlijst_callback(update, context):
     context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
-    context.bot.send_message(chat_id=update.effective_chat.id, text=eetlijst(), parse_mode=ParseMode.HTML)
+    context.bot.send_message(chat_id=update.effective_chat.id, text=replies.eetlijst(), parse_mode=ParseMode.HTML)
 
 def kok_callback(update, context):
     context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
-    update.message.reply_text(kok())
+    update.message.reply_text(replies.kok())
 
 def kookpunten_callback(update, context):
     context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
-    context.bot.send_message(chat_id=update.effective_chat.id, text=kookpunten(), parse_mode=ParseMode.HTML)
+    context.bot.send_message(chat_id=update.effective_chat.id, text=replies.kookpunten(), parse_mode=ParseMode.HTML)
 
 def kosten_callback(update, context):
     context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
-    context.bot.send_message(chat_id=update.effective_chat.id, text=kosten(), parse_mode=ParseMode.HTML)
+    context.bot.send_message(chat_id=update.effective_chat.id, text=replies.kosten(), parse_mode=ParseMode.HTML)
 
 def verhouding_callback(update, context):
     context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
-    context.bot.send_message(chat_id=update.effective_chat.id, text=verhouding(), parse_mode=ParseMode.HTML)
+    context.bot.send_message(chat_id=update.effective_chat.id, text=replies.verhouding(), parse_mode=ParseMode.HTML)
 
 def schreeuw_callback(update, context):
     if update.message.text == update.message.text.upper():
@@ -76,43 +75,6 @@ def schreeuw_callback(update, context):
 
 def unknown_callback(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id, text="Sorry, dat commando begreep ik niet.")
-
-def eetlijst():
-    ps = Parser()
-    reply = ""
-    if ps.get_eetlijst()[1] != []:
-        reply += str(ps.get_eetlijst()[1]) + " gaat koken.\n"
-    if ps.get_eetlijst()[0] != []:
-        reply += str(ps.get_eetlijst()[0]) + " eten mee.\n"
-    if ps.get_eetlijst()[3] != []:
-        reply += str(ps.get_eetlijst()[3]) + " moeten zich nog inschrijven."
-    return reply
-
-def kok():
-    ps = Parser()
-    if ps.get_eetlijst()[1] != []:
-        reply = str(ps.get_eetlijst()[1]) + " gaat koken."
-    else:
-        reply = "Wie wil er koken?"
-    return reply
-
-def kookpunten():
-    ps = Parser()
-    zipped = str(dict(zip(ps.get_points(), ps.get_names())))
-    reply = zipped.replace('{\'','<b>Kookpunten:</b>\n<code>').replace('\': \'','</code> (').replace('\', \'',')\n<code>').replace('\'}',')')
-    return reply
-
-def kosten():
-    ps = Parser()
-    zipped = str(dict(zip(ps.get_costs(), ps.get_names())))
-    reply = zipped.replace('{\'','<b>Gemiddelde kosten:</b>\n<code>€').replace('\': \'','</code> (').replace('\', \'',')\n<code>€').replace('\'}',')')
-    return reply
-
-def verhouding():
-    ps = Parser()
-    zipped = str(dict(zip(ps.get_ratio(), ps.get_names())))
-    reply = zipped.replace('{','<b>Verhouding koken/eten:</b>\n<code>').replace(': \'','</code> (').replace('\', ',')\n<code>').replace('\'}',')')
-    return reply
 
 start_handler = CommandHandler('start', start_callback)
 eetlijst_handler = CommandHandler('eetlijst', eetlijst_callback)
