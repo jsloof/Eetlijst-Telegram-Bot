@@ -1,29 +1,22 @@
 from parser import Parser
 
-def array_to_string(array):
-    str(array).replace('[','').replace('\'','').replace(']','')
-
 def eetlijst():
     ps = Parser()
     eaters, cook, absent, unknown = ps.get_eetlijst()
     if len(cook) == 0:
         reply = "Er gaat nog niemand koken.\n"
-    elif len(cook) == 1:
-        reply = "%s gaat koken.\n" % array_to_string(cook)
     else:
-        reply = "%s gaan koken.\n" % array_to_string(cook)
+        reply = str(cook).replace('[','').replace('\'','').replace(']','')
+        reply += " gaat" if len(cook) == 1 else " gaan"
+        reply += " koken.\n"
     if len(eaters) > 0:
-        reply += f"{array_to_string(eaters)}"
-        if len(eaters) == 1:
-            reply += " eet mee.\n"
-        else:
-            reply += " eten mee.\n"
+        reply += str(eaters).replace('[','').replace('\'','').replace(']','')
+        reply += " eet" if len(eaters) == 1 else " eten"
+        reply += " mee.\n"
     if len(unknown) > 0:
-        reply += f"{array_to_string(unknown)}"
-        if len(unknown) == 1:
-            reply += " moet zich nog inschrijven.\n"
-        else:
-            reply += " moeten zich nog inschrijven.\n"
+        reply += str(unknown).replace('[','').replace('\'','').replace(']','')
+        reply += " moet" if len(unknown) == 1 else " moeten"
+        reply += " zich nog inschrijven.\n"
     return reply
 
 def kok():
@@ -33,10 +26,10 @@ def kok():
         zipped = str(dict(zip(ps.get_ratio(), ps.get_names())))
         reply = "Er gaat nog niemand koken, maar dit is de verhouding koken/eten:\n"
         reply += zipped.replace('{','<code>').replace(': \'','</code> (').replace('\', ',')\n<code>').replace('\'}',')')
-    elif len(cook) == 1:
-        reply = "%s gaat koken." % array_to_string(cook)
     else:
-        reply = "%s gaan koken." % array_to_string(cook)
+        reply = str(cook).replace('[','').replace('\'','').replace(']','')
+        reply += " gaat" if len(cook) == 1 else " gaan"
+        reply += " koken."
     return reply
 
 def kookpunten():
