@@ -1,4 +1,5 @@
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, ChatAction
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from telegram import ChatAction, ParseMode
 from functools import wraps
 import os, logging
 
@@ -47,7 +48,7 @@ def kosten(update, context):
 
 @send_typing_action
 def verhouding(update, context):
-    context.bot.send_message(chat_id=update.effective_chat.id, text=reply, parse_mode=telegram.ParseMode.HTML)
+    context.bot.send_message(chat_id=update.effective_chat.id, text=reply, parse_mode=ParseMode.HTML)
     update.message.reply_text(f'v{verhouding()}')
 
 @send_typing_action
