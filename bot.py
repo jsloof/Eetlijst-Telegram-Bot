@@ -54,37 +54,23 @@ def error_callback(update, context):
 
 def eetlijst_callback(update, context):
     context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
-    ps = Parser()
-    reply = ""
-    if ps.get_eetlijst()[1] != []:
-        reply += str(ps.get_eetlijst()[1]) + " gaat koken.\n"
-    if ps.get_eetlijst()[0] != []:
-        reply += str(ps.get_eetlijst()[0]) + " eten mee.\n"
-    if ps.get_eetlijst()[3] != []:
-        reply += str(ps.get_eetlijst()[3]) + " moeten zich nog inschrijven."
-    update.message.reply_text(reply)
+    context.bot.send_message(chat_id=update.effective_chat.id, text=eetlijst(), parse_mode=ParseMode.HTML)
 
 def kok_callback(update, context):
     context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
-    ps = Parser()
-    if ps.get_eetlijst()[1] != []:
-        reply = str(ps.get_eetlijst()[1]) + " gaat koken."
-    else:
-        reply = "Wie wil er koken?"
-    context.bot.send_message(chat_id=update.effective_chat.id, text=reply)
+    update.message.reply_text(kok())
 
 def kookpunten_callback(update, context):
     context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
-    update.message.reply_text(f'p{kookpunten()}')
+    context.bot.send_message(chat_id=update.effective_chat.id, text=kookpunten(), parse_mode=ParseMode.HTML)
 
 def kosten_callback(update, context):
     context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
-    update.message.reply_text(f'k{kosten()}')
+    context.bot.send_message(chat_id=update.effective_chat.id, text=kosten(), parse_mode=ParseMode.HTML)
 
 def verhouding_callback(update, context):
     context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
-    context.bot.send_message(chat_id=update.effective_chat.id, text=reply, parse_mode=ParseMode.HTML)
-    update.message.reply_text(f'v{verhouding()}')
+    context.bot.send_message(chat_id=update.effective_chat.id, text=verhouding(), parse_mode=ParseMode.HTML)
 
 def schreeuw_callback(update, context):
     if update.message.text == update.message.text.upper():
