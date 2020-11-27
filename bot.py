@@ -15,7 +15,7 @@ dispatcher = updater.dispatcher
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
-def start(update, context):
+def start_callback(update, context):
     update.message.reply_text(f'Hallo {update.effective_user.first_name}')
 
 def error_callback(update, context):
@@ -23,8 +23,8 @@ def error_callback(update, context):
     # callback or inline query, or a poll update. In case you want this, keep in mind that sending the message
     # could fail
     if update.effective_message:
-        text = "Hey. I'm sorry to inform you that an error happened while I tried to handle your update. " \
-               "My developer(s) will be notified."
+        text = "Hallo. Er is helaas een fout opgetreden bij het verwerken van uw verzoek. " \
+               "Mijn ontwikkelaar wordt op de hoogte gesteld."
         update.effective_message.reply_text(text)
     # This traceback is created with accessing the traceback object from the sys.exc_info, which is returned as the
     # third value of the returned tuple. Then we use the traceback.format_tb to get the traceback as a string, which
@@ -45,14 +45,14 @@ def error_callback(update, context):
     if update.poll:
         payload += f' with the poll id {update.poll.id}.'
     # lets put this in a "well" formatted text
-    text = f"Hey.\n The error <code>{context.error}</code> happened{payload}. The full traceback:\n\n<code>{trace}" \
+    text = f"Hey.\nThe error <code>{context.error}</code> happened{payload}. The full traceback:\n\n<code>{trace}" \
            f"</code>"
     # and send it to the dev
     context.bot.send_message(TELEGRAM_DEV_ID, text, parse_mode=ParseMode.HTML)
     # we raise the error again, so the logger module catches it. If you don't use the logger module, use it.
     raise
 
-def eetlijst(update, context):
+def eetlijst_callback(update, context):
     bot.send_chat_action(chat_id=chat_id, action=ChatAction.TYPING)
     ps = Parser()
     reply = ""
@@ -64,7 +64,7 @@ def eetlijst(update, context):
         reply += str(ps.get_eetlijst()[3]) + " moeten zich nog inschrijven."
     update.message.reply_text(reply)
 
-def kok(update, context):
+def kok_callback(update, context):
     bot.send_chat_action(chat_id=chat_id, action=ChatAction.TYPING)
     ps = Parser()
     if ps.get_eetlijst()[1] != []:
@@ -73,24 +73,24 @@ def kok(update, context):
         reply = "Wie wil er koken?"
     context.bot.send_message(chat_id=update.effective_chat.id, text=reply)
 
-def kookpunten(update, context):
+def kookpunten_callback(update, context):
     bot.send_chat_action(chat_id=chat_id, action=ChatAction.TYPING)
     update.message.reply_text(f'p{kookpunten()}')
 
-def kosten(update, context):
+def kosten_callback(update, context):
     bot.send_chat_action(chat_id=chat_id, action=ChatAction.TYPING)
     update.message.reply_text(f'k{kosten()}')
 
-def verhouding(update, context):
+def verhouding_callback(update, context):
     bot.send_chat_action(chat_id=chat_id, action=ChatAction.TYPING)
     context.bot.send_message(chat_id=update.effective_chat.id, text=reply, parse_mode=ParseMode.HTML)
     update.message.reply_text(f'v{verhouding()}')
 
-def schreeuw(update, context):
+def schreeuw_callback(update, context):
     if update.message.text == update.message.text.upper():
         update.message.reply_text('JE HOEFT NIET ZO TE SCHREEUWEN!!1')
 
-def unknown(update, context):
+def unknown_callback(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id, text="Sorry, dat commando begreep ik niet.")
 
 def eetlijst():
@@ -219,14 +219,14 @@ class Parser:
             list_points.append(all_points[i].text)
         return list_points if person == None else list_points[person]
 
-start_handler = CommandHandler('start', start)
-eetlijst_handler = CommandHandler('eetlijst', eetlijst)
-kok_handler = CommandHandler('kok', kok)
-kookpunten_handler = CommandHandler('kookpunten', kookpunten)
-kosten_handler = CommandHandler('kosten', kosten)
-verhouding_handler = CommandHandler('verhouding', verhouding)
-schreeuw_handler = MessageHandler(Filters.text & (~Filters.command), schreeuw)
-unknown_handler = MessageHandler(Filters.command, unknown)
+start_handler = CommandHandler('start', start_callback)
+eetlijst_handler = CommandHandler('eetlijst', eetlijst_callback)
+kok_handler = CommandHandler('kok', kok_callback)
+kookpunten_handler = CommandHandler('kookpunten', kookpunten_callback)
+kosten_handler = CommandHandler('kosten', kosten_callback)
+verhouding_handler = CommandHandler('verhouding', verhouding_callback)
+schreeuw_handler = MessageHandler(Filters.text & (~Filters.command), schreeuw_callback)
+unknown_handler = MessageHandler(Filters.command, unknown_callback)
 
 dispatcher.add_error_handler(error_callback)
 dispatcher.add_handler(start_handler)
