@@ -23,20 +23,20 @@ class Parser:
 
     # Get the eetlijst of today
     def get_eetlijst(self):
-        eat, cook, absent, unknown = [], [], [], []
+        eaters, cook, absent, unknown = [], [], [], []
         list_images = self.today_status[1].parent.find_all('img')
         for image in list_images:
             choice = image['src']
             person = re.split('\s', image['title'])[0]
             if choice == 'eet.gif':
-                eat.append(person)
+                eaters.append(person)
             elif choice == 'kook.gif':
                 cook.append(person)
             elif choice == 'nop.gif':
                 absent.append(person)
             else:
                 unknown.append(person)
-        return eat, cook, absent, unknown
+        return eaters, cook, absent, unknown
 
     # Returns an array with the eaters
     def get_eaters(self):
