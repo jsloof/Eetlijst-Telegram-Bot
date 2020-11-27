@@ -1,4 +1,5 @@
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, ChatAction
+from functools import wraps
 import os, logging
 
 from bs4 import BeautifulSoup
@@ -11,9 +12,11 @@ dispatcher = updater.dispatcher
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
+@send_typing_action
 def start(update, context):
     update.message.reply_text(f'Hallo {update.effective_user.first_name}')
 
+@send_typing_action
 def eetlijst(update, context):
     ps = Parser()
     reply = ""
@@ -25,6 +28,7 @@ def eetlijst(update, context):
         reply += str(ps.get_eetlijst()[3]) + " moeten zich nog inschrijven."
     update.message.reply_text(reply)
 
+@send_typing_action
 def kok(update, context):
     ps = Parser()
     if ps.get_eetlijst()[1] != []:
@@ -33,17 +37,37 @@ def kok(update, context):
         reply = "Wie wil er koken?"
     context.bot.send_message(chat_id=update.effective_chat.id, text=reply)
 
+@send_typing_action
 def kookpunten(update, context):
     update.message.reply_text(f'p{kookpunten()}')
 
+@send_typing_action
 def kosten(update, context):
     update.message.reply_text(f'k{kosten()}')
 
+@send_typing_action
 def verhouding(update, context):
+    context.bot.send_message(chat_id=update.effective_chat.id, text=reply, parse_mode=telegram.ParseMode.HTML)
     update.message.reply_text(f'v{verhouding()}')
 
+@send_typing_action
+def schreeuw(update, context):
+    if update.message.text == update.message.text.upper():
+        update.message.reply_text('JE HOEFT NIET ZO TE SCHREEUWEN!!1')
+
+@send_typing_action
 def unknown(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id, text="Sorry, dat commando begreep ik niet.")
+
+def send_typing_action(func):
+    """Sends typing action while processing func command."""
+
+    @wraps(func)
+    def command_func(update, context, *args, **kwargs):
+        context.bot.send_chat_action(chat_id=update.effective_message.chat_id, action=ChatAction.TYPING)
+        return func(update, context,  *args, **kwargs)
+
+    return command_func
 
 def eetlijst():
     ps = Parser()
@@ -177,6 +201,7 @@ kok_handler = CommandHandler('kok', kok)
 kookpunten_handler = CommandHandler('kookpunten', kookpunten)
 kosten_handler = CommandHandler('kosten', kosten)
 verhouding_handler = CommandHandler('verhouding', verhouding)
+schreeuw_handler = MessageHandler(Filters.text & (~Filters.command), schreeuw)
 unknown_handler = MessageHandler(Filters.command, unknown)
 
 dispatcher.add_handler(start_handler)
@@ -185,6 +210,7 @@ dispatcher.add_handler(kok_handler)
 dispatcher.add_handler(kookpunten_handler)
 dispatcher.add_handler(kosten_handler)
 dispatcher.add_handler(verhouding_handler)
+dispatcher.add_handler(schreeuw_handler)
 dispatcher.add_handler(unknown_handler) # This handler must be added last
 
 updater.start_polling()
