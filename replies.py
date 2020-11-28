@@ -6,15 +6,15 @@ def eetlijst():
     if len(cook) == 0:
         reply = "Er gaat nog niemand koken.\n"
     else:
-        reply = str(cook).replace('[','').replace('\'','').replace(']','')
+        reply = ' en'.join(str(cook).replace('[','').replace('\'','').replace(']','').rsplit(',', 1))
         reply += " gaat" if len(cook) == 1 else " gaan"
         reply += " koken.\n"
     if len(eaters) > 0:
-        reply += str(eaters).replace('[','').replace('\'','').replace(']','')
+        reply += ' en'.join(str(eaters).replace('[','').replace('\'','').replace(']','').rsplit(',', 1))
         reply += " eet" if len(eaters) == 1 else " eten"
         reply += " mee.\n"
     if len(unknown) > 0:
-        reply += str(unknown).replace('[','').replace('\'','').replace(']','')
+        reply += ' en'.join(str(unknown).replace('[','').replace('\'','').replace(']','').rsplit(',', 1))
         reply += " moet" if len(unknown) == 1 else " moeten"
         reply += " zich nog inschrijven.\n"
     return reply
@@ -27,7 +27,7 @@ def kok():
         reply = "Er gaat nog niemand koken, maar dit is de verhouding koken/eten:\n"
         reply += zipped.replace('{','<code>').replace(': \'','</code> (').replace('\', ',')\n<code>').replace('\'}',')')
     else:
-        reply = str(cook).replace('[','').replace('\'','').replace(']','')
+        reply = ' en'.join(str(cook).replace('[','').replace('\'','').replace(']','').rsplit(',', 1))
         reply += " gaat" if len(cook) == 1 else " gaan"
         reply += " koken."
     return reply
