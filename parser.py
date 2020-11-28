@@ -35,7 +35,7 @@ class Parser:
             elif choice == 'nop.gif':
                 absent.append(person)
             else:
-                person = get_names(len(set(eaters + cook + absent + unknown)))
+                person = self.get_names(len(set(eaters + cook + absent + unknown)))
                 unknown.append(person)
         return eaters, cook, absent, unknown
 
