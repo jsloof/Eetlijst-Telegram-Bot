@@ -50,8 +50,8 @@ def start_callback(update, context):
 
 def eetlijst_callback(update, context):
     context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
-    context.bot.send_message(chat_id=update.effective_chat.id, text=replies.eetlijst().get('reply'), parse_mode=ParseMode.HTML)
-    for person in replies.eetlijst().get('unknown_persons')
+    context.bot.send_message(chat_id=update.effective_chat.id, text=replies.eetlijst()['reply'], parse_mode=ParseMode.HTML)
+    for person in replies.eetlijst()['unknown_persons']
         context.bot.send_message(chat_id=person[1], text=f'{person[0]}, je moet je nog inschrijven.', parse_mode=ParseMode.HTML)
 
 def kok_callback(update, context):

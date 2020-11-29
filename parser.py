@@ -33,7 +33,7 @@ class Parser:
             elif choice == 'nop.gif':
                 absent.append(person)
             else:
-                person = self.persons.items()[len(set(eaters + cook + absent + unknown))][1]
+                person = self.persons.values()[len(set(eaters + cook + absent + unknown))]
                 unknown.append(person)
         return eaters, cook, absent, unknown
 
@@ -81,10 +81,10 @@ class Parser:
         return list_points
 
     # Returns a dict with the names and telegram_ids of the persons
-    def get_persons(self, name: str = None):
+    def get_persons(self, person: str = None):
         persons = {}
         all_names = self.soup_kosten_page.find('th', colspan='3').parent.find_all('th')[1:-1]
         for name in all_names:
             stripped_name = name.text.strip()
-            persons.update({stripped_name: os.environ[stripped_name]})
-        return persons if name == None else name, persons.get(name)
+            persons[stripped_name] = os.environ[stripped_name]
+        return persons if person == None else person, persons[person]
