@@ -33,7 +33,7 @@ class Parser:
             elif choice == 'nop.gif':
                 absent.append(person)
             else:
-                person = self.persons.values()[len(set(eaters + cook + absent + unknown))]
+                person = list(self.persons.keys())[len(set(eaters + cook + absent + unknown))]
                 unknown.append(person)
         return eaters, cook, absent, unknown
 
@@ -87,4 +87,4 @@ class Parser:
         for name in all_names:
             stripped_name = name.text.strip()
             persons[stripped_name] = os.environ[stripped_name]
-        return persons if person == None else person, persons[person]
+        return persons if person == None else (person, persons[person])
