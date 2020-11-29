@@ -16,8 +16,8 @@ class Parser:
         kosten_page = requests.get('http://eetlijst.nl/' + kosten_url)
         self.soup_kosten_page = BeautifulSoup(kosten_page.content, "html.parser")
 
-        self.eetlijst = self.get_eetlijst()
         self.persons = self.get_persons()
+        self.eetlijst = self.get_eetlijst()
 
     # Returns the eetlijst of today
     def get_eetlijst(self):
