@@ -70,7 +70,7 @@ def verhouding_callback(update, context):
     context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
     context.bot.send_message(chat_id=update.effective_chat.id, text=replies.verhouding(), parse_mode=ParseMode.HTML)
 
-def schreeuw_callback(update, context):
+def ivan_callback(update, context):
     update.message.reply_text('TOSTI-IJZER')
 
 def schreeuw_callback(update, context):
