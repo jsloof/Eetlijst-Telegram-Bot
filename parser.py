@@ -81,10 +81,10 @@ class Parser:
         return list_points
 
     # Returns a dict with the names and telegram_ids of the persons
-    def get_persons(self, person: str = None):
+    def get_persons(self):
         persons = {}
         all_names = self.soup_kosten_page.find('th', colspan='3').parent.find_all('th')[1:-1]
         for name in all_names:
             stripped_name = name.text.strip()
             persons[stripped_name] = os.environ[stripped_name]
-        return persons if person == None else (person, persons[person])
+        return persons

@@ -19,14 +19,14 @@ def eetlijst():
         reply += " zich nog inschrijven.\n"
     unknown_persons = []
     for name in unknown:
-        unknown_persons.append(ps.get_persons(name))
+        unknown_persons.append(ps.persons[name])
     return {'reply': reply, 'unknown_persons': unknown_persons}
 
 def kok():
     ps = Parser()
     cook = ps.get_cook()
     if len(cook) == 0:
-        zipped = str(dict(zip(ps.get_ratio(), ps.get_persons().keys())))
+        zipped = str(dict(zip(ps.get_ratio(), list(ps.persons.keys()))))
         reply = "Er gaat nog niemand koken, maar dit is de verhouding koken/eten:\n"
         reply += zipped.replace('{','<code>').replace(': \'','</code> (').replace('\', ',')\n<code>').replace('\'}',')')
     else:
@@ -37,18 +37,18 @@ def kok():
 
 def kookpunten():
     ps = Parser()
-    zipped = str(dict(zip(ps.get_points(), ps.get_persons().keys())))
+    zipped = str(dict(zip(ps.get_points(), list(ps.persons.keys()))))
     reply = zipped.replace('{\'','<b>Kookpunten:</b>\n<code>').replace('\': \'','</code> (').replace('\', \'',')\n<code>').replace('\'}',')')
     return reply
 
 def kosten():
     ps = Parser()
-    zipped = str(dict(zip(ps.get_costs(), ps.get_persons().keys())))
+    zipped = str(dict(zip(ps.get_costs(), list(ps.persons.keys()))))
     reply = zipped.replace('{\'','<b>Gemiddelde kosten:</b>\n<code>€').replace('\': \'','</code> (').replace('\', \'',')\n<code>€').replace('\'}',')')
     return reply
 
 def verhouding():
     ps = Parser()
-    zipped = str(dict(zip(ps.get_ratio(), ps.get_persons().keys())))
+    zipped = str(dict(zip(ps.get_ratio(), list(ps.persons.keys()))))
     reply = zipped.replace('{','<b>Verhouding koken/eten:</b>\n<code>').replace(': \'','</code> (').replace('\', ',')\n<code>').replace('\'}',')')
     return reply

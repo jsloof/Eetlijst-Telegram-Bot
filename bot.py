@@ -70,8 +70,8 @@ def verhouding_callback(update, context):
     context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
     context.bot.send_message(chat_id=update.effective_chat.id, text=replies.verhouding(), parse_mode=ParseMode.HTML)
 
-def ivan_callback(update, context):
-    update.message.reply_text('TOSTI-IJZER')
+#def ivan_callback(update, context):
+#    update.message.reply_text('TOSTI-IJZER')
 
 def schreeuw_callback(update, context):
     if update.message.text == update.message.text.upper():
@@ -86,7 +86,7 @@ kok_handler = CommandHandler('kok', kok_callback)
 kookpunten_handler = CommandHandler('kookpunten', kookpunten_callback)
 kosten_handler = CommandHandler('kosten', kosten_callback)
 verhouding_handler = CommandHandler('verhouding', verhouding_callback)
-ivan_handler = MessageHandler(Filters.regex('(ivan)'), ivan_callback)
+#ivan_handler = MessageHandler(Filters.regex('(ivan)'), ivan_callback)
 schreeuw_handler = MessageHandler(Filters.text & (~Filters.command), schreeuw_callback)
 unknown_handler = MessageHandler(Filters.command, unknown_callback)
 
@@ -97,7 +97,7 @@ dispatcher.add_handler(kok_handler)
 dispatcher.add_handler(kookpunten_handler)
 dispatcher.add_handler(kosten_handler)
 dispatcher.add_handler(verhouding_handler)
-dispatcher.add_handler(ivan_handler)
+#dispatcher.add_handler(ivan_handler)
 dispatcher.add_handler(schreeuw_handler)
 # The unknown_handler must be added last.
 dispatcher.add_handler(unknown_handler)
