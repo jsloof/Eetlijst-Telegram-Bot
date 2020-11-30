@@ -50,9 +50,7 @@ def start_callback(update, context):
 
 def eetlijst_callback(update, context):
     context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
-    context.bot.send_message(chat_id=update.effective_chat.id, text=replies.eetlijst()['reply'], parse_mode=ParseMode.HTML)
-    for person in replies.eetlijst()['unknown_persons']
-        context.bot.send_message(chat_id=person[1], text=f'{person[0]}, je moet je nog inschrijven.', parse_mode=ParseMode.HTML)
+    context.bot.send_message(chat_id=update.effective_chat.id, text=replies.eetlijst(), parse_mode=ParseMode.HTML)
 
 def kok_callback(update, context):
     context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
@@ -70,15 +68,12 @@ def verhouding_callback(update, context):
     context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
     context.bot.send_message(chat_id=update.effective_chat.id, text=replies.verhouding(), parse_mode=ParseMode.HTML)
 
-#def ivan_callback(update, context):
-#    update.message.reply_text('TOSTI-IJZER')
-
 def schreeuw_callback(update, context):
     if update.message.text == update.message.text.upper():
         update.message.reply_text('JE HOEFT NIET ZO TE SCHREEUWEN!!1')
 
 def unknown_callback(update, context):
-    update.message.reply_text('Sorry, dit commando begreep ik niet.')
+    context.bot.send_message(chat_id=update.effective_chat.id, text="Sorry, dat commando begreep ik niet.")
 
 start_handler = CommandHandler('start', start_callback)
 eetlijst_handler = CommandHandler('eetlijst', eetlijst_callback)
@@ -86,7 +81,6 @@ kok_handler = CommandHandler('kok', kok_callback)
 kookpunten_handler = CommandHandler('kookpunten', kookpunten_callback)
 kosten_handler = CommandHandler('kosten', kosten_callback)
 verhouding_handler = CommandHandler('verhouding', verhouding_callback)
-#ivan_handler = MessageHandler(Filters.regex('(ivan)'), ivan_callback)
 schreeuw_handler = MessageHandler(Filters.text & (~Filters.command), schreeuw_callback)
 unknown_handler = MessageHandler(Filters.command, unknown_callback)
 
@@ -97,7 +91,6 @@ dispatcher.add_handler(kok_handler)
 dispatcher.add_handler(kookpunten_handler)
 dispatcher.add_handler(kosten_handler)
 dispatcher.add_handler(verhouding_handler)
-#dispatcher.add_handler(ivan_handler)
 dispatcher.add_handler(schreeuw_handler)
 # The unknown_handler must be added last.
 dispatcher.add_handler(unknown_handler)
