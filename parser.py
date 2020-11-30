@@ -86,5 +86,5 @@ class Parser:
         all_names = self.soup_kosten_page.find('th', colspan='3').parent.find_all('th')[1:-1]
         for name in all_names:
             stripped_name = name.text.strip()
-            persons[stripped_name] = os.environ[stripped_name]
+            persons[stripped_name] = os.environ['TELEGRAM_DEV_ID']
         return persons
