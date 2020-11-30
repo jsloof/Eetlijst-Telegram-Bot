@@ -2,13 +2,15 @@ from telegram import ChatAction, ParseMode
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from telegram.error import TelegramError, Unauthorized, BadRequest, TimedOut, ChatMigrated, NetworkError
 from telegram.utils.helpers import mention_html
-import logging, os, replies, sys, traceback
+import datetime, logging, os, pytz, replies, sys, traceback
 
 TELEGRAM_TOKEN = os.environ['TELEGRAM_TOKEN']
 TELEGRAM_DEV_ID = os.environ['TELEGRAM_DEV_ID']
+GROUP_CHAT_ID = os.environ['GROUP_CHAT_ID']
 
 updater = Updater(token=TELEGRAM_TOKEN, use_context=True)
 dispatcher = updater.dispatcher
+job_queue = updater.job_queue
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
@@ -64,6 +66,10 @@ def kosten_callback(update, context):
     context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
     context.bot.send_message(chat_id=update.effective_chat.id, text=replies.kosten(), parse_mode=ParseMode.HTML)
 
+def reminder_callback(context):
+    context.bot.send_chat_action(chat_id=context.job.context, action=ChatAction.TYPING)
+    context.bot.send_message(chat_id=context.job.context, text=replies.eetlijst()['reply'], parse_mode=ParseMode.HTML)
+
 def verhouding_callback(update, context):
     context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
     context.bot.send_message(chat_id=update.effective_chat.id, text=replies.verhouding(), parse_mode=ParseMode.HTML)
@@ -88,6 +94,8 @@ dispatcher.add_handler(kosten_handler)
 dispatcher.add_handler(verhouding_handler)
 # The unknown_handler must be added last.
 dispatcher.add_handler(unknown_handler)
+
+job_queue.run_daily(reminder_callback, datetime.time(hour=15, tzinfo=pytz.timezone('Europe/Amsterdam')), context=GROUP_CHAT_ID)
 
 updater.start_polling()
 updater.idle()
