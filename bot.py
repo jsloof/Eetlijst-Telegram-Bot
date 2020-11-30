@@ -69,7 +69,7 @@ def verhouding_callback(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id, text=replies.verhouding(), parse_mode=ParseMode.HTML)
 
 def unknown_callback(update, context):
-    update.message.reply_text('Sorry, dat commando begreep ik niet.')
+    context.bot.send_message(chat_id=update.effective_chat.id, text="Sorry, dat commando begreep ik niet.")
 
 start_handler = CommandHandler('start', start_callback)
 eetlijst_handler = CommandHandler('eetlijst', eetlijst_callback)
