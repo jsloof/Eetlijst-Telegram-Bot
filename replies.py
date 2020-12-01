@@ -3,12 +3,15 @@ from parser import Parser
 def eetlijst():
     ps = Parser()
     eaters, cook, absent, unknown = ps.eetlijst
-    if len(cook) == 0:
-        reply = "Er gaat nog niemand koken.\n"
-    else:
-        reply = ' en'.join(str(cook).replace('[','').replace('\'','').replace(']','').rsplit(',', 1))
+    reply = ""
+    unknown_persons = []
+    if len(cook) > 0:
+        number = len(eaters + cook)
+        reply += ' en'.join(str(cook).replace('[','').replace('\'','').replace(']','').rsplit(',', 1))
         reply += " gaat" if len(cook) == 1 else " gaan"
-        reply += " koken.\n"
+        reply += " koken voor"
+        reply += " tot nu toe" if len(unknown) > 0
+        reply += " alleen zichzelf.\n" if number == 1 else f" {number} personen.\n"
     if len(eaters) > 0:
         reply += ' en'.join(str(eaters).replace('[','').replace('\'','').replace(']','').rsplit(',', 1))
         reply += " eet" if len(eaters) == 1 else " eten"
@@ -17,9 +20,10 @@ def eetlijst():
         reply += ' en'.join(str(unknown).replace('[','').replace('\'','').replace(']','').rsplit(',', 1))
         reply += " moet" if len(unknown) == 1 else " moeten"
         reply += " zich nog inschrijven.\n"
-    unknown_persons = []
-    for name in unknown:
-        unknown_persons.append({'name': name, 'telegram_id': ps.persons[name]})
+        for name in unknown:
+            unknown_persons.append({'name': name, 'telegram_id': ps.persons[name]})
+    if reply == "":
+        reply = "Niemand eet mee."
     return {'reply': reply, 'unknown_persons': unknown_persons}
 
 def kok():
@@ -27,10 +31,9 @@ def kok():
     cook = ps.get_cook()
     if len(cook) == 0:
         if len(ps.get_eaters() + ps.get_unknown()) == 0:
-            reply = "Er eet niemand mee."
+            reply = "Niemand eet mee."
         else:
-            cook_suggestion = ps.get_cook_suggestion()
-            reply = f"Er gaat nog niemand koken, maar {cook_suggestion} staat het laagst qua verhouding."
+            reply = f"Er gaat nog niemand koken.\n{ps.get_cook_suggestion()} staat het laagst qua verhouding."
     else:
         reply = ' en'.join(str(cook).replace('[','').replace('\'','').replace(']','').rsplit(',', 1))
         reply += " gaat" if len(cook) == 1 else " gaan"
