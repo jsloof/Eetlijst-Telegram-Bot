@@ -2,7 +2,7 @@ from parser import Parser
 
 def eetlijst():
     ps = Parser()
-    eaters, cook, absent, unknown = ps.get_eetlijst()
+    eaters, cook, absent, unknown = ps.eetlijst
     if len(cook) == 0:
         reply = "Er gaat nog niemand koken.\n"
     else:
@@ -26,9 +26,11 @@ def kok():
     ps = Parser()
     cook = ps.get_cook()
     if len(cook) == 0:
-        zipped = str(dict(zip(ps.get_ratio(), list(ps.persons.keys()))))
-        reply = "Er gaat nog niemand koken, maar dit is de verhouding koken/eten:\n"
-        reply += zipped.replace('{','<code>').replace(': \'','</code> (').replace('\', ',')\n<code>').replace('\'}',')')
+        if len(ps.get_eaters() + ps.get_unknown()) == 0:
+            reply = "Er eet niemand mee."
+        else:
+            cook_suggestion = ps.get_cook_suggestion()
+            reply = f"Er gaat nog niemand koken, maar {cook_suggestion} staat het laagst qua verhouding."
     else:
         reply = ' en'.join(str(cook).replace('[','').replace('\'','').replace(']','').rsplit(',', 1))
         reply += " gaat" if len(cook) == 1 else " gaan"
@@ -37,18 +39,18 @@ def kok():
 
 def kookpunten():
     ps = Parser()
-    zipped = str(dict(zip(ps.get_points(), list(ps.persons.keys()))))
+    zipped = str(dict(zip(ps.get_points(), ps.names)))
     reply = zipped.replace('{\'','<b>Kookpunten:</b>\n<code>').replace('\': \'','</code> (').replace('\', \'',')\n<code>').replace('\'}',')')
     return reply
 
 def kosten():
     ps = Parser()
-    zipped = str(dict(zip(ps.get_costs(), list(ps.persons.keys()))))
+    zipped = str(dict(zip(ps.get_costs(), ps.names)))
     reply = zipped.replace('{\'','<b>Gemiddelde kosten:</b>\n<code>€').replace('\': \'','</code> (').replace('\', \'',')\n<code>€').replace('\'}',')')
     return reply
 
 def verhouding():
     ps = Parser()
-    zipped = str(dict(zip(ps.get_ratio(), list(ps.persons.keys()))))
+    zipped = str(dict(zip(ps.get_ratio(), ps.names)))
     reply = zipped.replace('{','<b>Verhouding koken/eten:</b>\n<code>').replace(': \'','</code> (').replace('\', ',')\n<code>').replace('\'}',')')
     return reply

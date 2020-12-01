@@ -4,6 +4,7 @@ import os, re, requests
 class Parser:
 
     def __init__(self):
+        """Initiates the Parser object."""
         eetlijst_user = os.environ['EETLIJST_USER']
         eetlijst_pass = os.environ['EETLIJST_PASS']
 
@@ -17,10 +18,11 @@ class Parser:
         self.soup_kosten_page = BeautifulSoup(kosten_page.content, "html.parser")
 
         self.persons = self.get_persons()
+        self.names = list(self.persons.keys())
         self.eetlijst = self.get_eetlijst()
 
-    # Returns the eetlijst of today
     def get_eetlijst(self):
+        """Returns the eetlijst of today."""
         eaters, cook, absent, unknown = [], [], [], []
         list_images = self.soup_main_page.find_all('td', class_='r')[1].parent.find_all('img')
         for image in list_images:
@@ -33,28 +35,41 @@ class Parser:
             elif choice == 'nop.gif':
                 absent.append(person)
             else:
-                person = list(self.persons.keys())[len(set(eaters + cook + absent + unknown))]
+                person = self.names[len(set(eaters + cook + absent + unknown))]
                 unknown.append(person)
         return eaters, cook, absent, unknown
 
-    # Returns a list with the eaters
     def get_eaters(self):
+        """Returns a list with the eaters."""
         return self.eetlijst[0]
 
-    # Returns a list with the cook(s)
     def get_cook(self):
+        """Returns a list with the cook(s)."""
         return self.eetlijst[1]
 
-    # Returns a list with the absent persons
     def get_absent(self):
+        """Returns a list with the absent persons."""
         return self.eetlijst[2]
 
-    # Returns a list with the persons with unknown status
     def get_unknown(self):
+        """Returns a list with the persons with unknown status."""
         return self.eetlijst[3]
 
-    # Returns a list with the ratio cook/eat per person
+    def get_cook_suggestion(self):
+        """Returns the name of the person with the lowest cook/eat ratio."""
+        ratio = self.get_ratio()
+        ratio_sorted = ratio
+        ratio_sorted.sort()
+        potential_cooks = list(set(self.get_eaters() + self.get_unknown()))
+        name = ""
+        for r in ratio_sorted:
+            index = ratio.index(r)
+            name = self.names[index]
+            if name in potential_cooks break
+        return name
+
     def get_ratio(self):
+        """Returns a list with the ratio cook/eat per person."""
         list_ratio = []
         all_times_cook = self.soup_kosten_page.find('td', text='  Aantal keer gekookt').parent.find_all('td', class_="r")
         all_times_eat = self.soup_kosten_page.find('td', text='  Aantal keer meegegeten').parent.find_all('td', class_="r")
@@ -64,24 +79,24 @@ class Parser:
             list_ratio.append(round(times_cook / times_eat, 3))
         return list_ratio
 
-    # Returns a list with the average meal costs per person
     def get_costs(self):
+        """Returns a list with the average meal costs per person."""
         list_costs = []
         all_costs = self.soup_kosten_page.find('td', text='  Kookt gemiddeld voor (p.p.)').parent.find_all('td', class_="r")[0:-1]
         for i in range(len(all_costs)):
             list_costs.append(all_costs[i].text.strip())
         return list_costs
 
-    # Returns a list with the cooking points per person
     def get_points(self):
+        """Returns a list with the cooking points per person."""
         list_points = []
         all_points = self.soup_kosten_page.find_all('td', class_="l", colspan='3')[-1].parent.find_all('td', class_="r")[0:-1]
         for i in range(len(all_points)):
             list_points.append(all_points[i].text.strip())
         return list_points
 
-    # Returns a dict with the names and telegram_ids of the persons
     def get_persons(self):
+        """Returns a dict with the names and telegram_ids of the persons."""
         persons = {}
         all_names = self.soup_kosten_page.find('th', colspan='3').parent.find_all('th')[1:-1]
         for name in all_names:
