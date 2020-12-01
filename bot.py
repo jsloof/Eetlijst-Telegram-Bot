@@ -50,11 +50,11 @@ def error_callback(update, context):
 def start_callback(update, context):
     update.message.reply_text(f'Hallo {update.effective_user.first_name}')
 
-def eetlijst_callback(update, context, job_queue):
+def eetlijst_callback(update, context):
     context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
     eetlijst = replies.eetlijst()
     for person in eetlijst['unknown_persons']:
-        job_queue.run_once(individual_callback, 1, context=person)
+        context.job_queue.run_once(individual_callback, 1, context=person)
     context.bot.send_message(chat_id=update.effective_chat.id, text=eetlijst['reply'], parse_mode=ParseMode.HTML)
 
 def individual_callback(context):
@@ -84,7 +84,7 @@ def unknown_callback(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id, text="Sorry, dat commando begreep ik niet.")
 
 start_handler = CommandHandler('start', start_callback)
-eetlijst_handler = CommandHandler('eetlijst', eetlijst_callback, pass_job_queue=True)
+eetlijst_handler = CommandHandler('eetlijst', eetlijst_callback)
 kok_handler = CommandHandler('kok', kok_callback)
 kookpunten_handler = CommandHandler('kookpunten', kookpunten_callback)
 kosten_handler = CommandHandler('kosten', kosten_callback)
