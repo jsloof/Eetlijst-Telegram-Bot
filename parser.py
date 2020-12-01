@@ -108,7 +108,7 @@ class Parser:
 
     def set_eetlijst(self, user_id, status):
         user_ids = list(self.persons.values())
-        person = user_ids.index(user_id)
+        person = user_ids.index(str(user_id))
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_argument('--headless')
         chrome_options.add_argument('--disable-dev-shm-usage')
