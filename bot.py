@@ -1,7 +1,7 @@
 from telegram import ChatAction, ParseMode
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from telegram.utils.helpers import mention_html
-import datetime, logging, os, pytz, replies, sys, traceback
+import datetime, logging, os, pytz, re, replies, sys, traceback
 
 TELEGRAM_TOKEN = os.environ['TELEGRAM_TOKEN']
 TELEGRAM_DEV_ID = os.environ['TELEGRAM_DEV_ID']
@@ -102,8 +102,8 @@ kok_handler = CommandHandler('kok', kok_callback)
 kookpunten_handler = CommandHandler('kookpunten', kookpunten_callback)
 kosten_handler = CommandHandler('kosten', kosten_callback)
 verhouding_handler = CommandHandler('verhouding', verhouding_callback)
-cook_handler = MessageHandler(Filters.regex(r'ik kook') & (~Filters.command), cook_callback)
-eat_handler = MessageHandler(Filters.regex(r'ik eet|mee') & (~Filters.command), eat_callback)
+cook_handler = MessageHandler(Filters.regex(re.compile(r'(ik).+(kook|koken)', re.IGNORECASE)), cook_callback)
+eat_handler = MessageHandler(Filters.regex(re.compile(r'(ik).+((eet).+(mee)|(mee-eten|meeeten))', re.IGNORECASE)), eat_callback)
 unknown_handler = MessageHandler(Filters.command, unknown_callback)
 
 dispatcher.add_error_handler(error_callback)
