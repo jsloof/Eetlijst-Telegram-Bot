@@ -58,14 +58,14 @@ class Parser:
     def get_cook_suggestion(self):
         """Returns the name of the person with the lowest cook/eat ratio."""
         ratio = self.get_ratio()
-        ratio_sorted = ratio
-        ratio_sorted.sort()
+        ratio_sorted = sorted(ratio)
         potential_cooks = list(set(self.get_eaters() + self.get_unknown()))
         name = ""
         for r in ratio_sorted:
             index = ratio.index(r)
             name = self.names[index]
-            if name in potential_cooks break
+            if name in potential_cooks:
+                break
         return name
 
     def get_ratio(self):
