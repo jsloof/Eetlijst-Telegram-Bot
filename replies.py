@@ -57,3 +57,12 @@ def verhouding():
     zipped = str(dict(zip(ps.get_ratio(), ps.names)))
     reply = zipped.replace('{','<b>Verhouding koken/eten:</b>\n<code>').replace(': \'','</code> (').replace('\', ',')\n<code>').replace('\'}',')')
     return reply
+
+def set_eetlijst(user_id, status)
+    ps = Parser()
+    ps.set_eetlijst(user_id, status)
+    if status == 0:
+        reply = "Oke, ik schrijf {} uit."
+    elif status == -1:
+        reply = "Oke, ik schrijf {} in."
+    return reply

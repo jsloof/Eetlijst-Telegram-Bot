@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+from selenium import webdriver
 import os, re, requests
 
 class Parser:
@@ -16,6 +17,7 @@ class Parser:
         kosten_url = self.soup_main_page.find_all('a')[2]['href']
         kosten_page = requests.get('http://eetlijst.nl/' + kosten_url)
         self.soup_kosten_page = BeautifulSoup(kosten_page.content, "html.parser")
+        self.session_id = re.split('\W', kosten_url)[-1]
 
         self.persons = self.get_persons()
         self.names = list(self.persons.keys())
@@ -103,3 +105,17 @@ class Parser:
             stripped_name = name.text.strip()
             persons[stripped_name] = os.environ[stripped_name]
         return persons
+
+    def set_eetlijst(self, user_id, status)
+        user_ids = list(self.persons.values())
+        person = user_ids.index(user_id)
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--disable-dev-shm-usage')
+        chrome_options.add_argument('--no-sandbox')
+        chrome_options.binary_location = os.environ['GOOGLE_CHROME_BIN']
+        driver = webdriver.Chrome(executable_path=os.environ['CHROMEDRIVER_PATH'], chrome_options=chrome_options)
+        driver.get(f'http://www.eetlijst.nl/main.php?session_id={self.session_id}&who={person}&what={status}')
+        elem = driver.find_element_by_name("submitwithform")
+        elem.click()
+        driver.quit()

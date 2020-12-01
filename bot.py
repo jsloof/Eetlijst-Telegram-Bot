@@ -83,6 +83,11 @@ def verhouding_callback(update, context):
     context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
     context.bot.send_message(chat_id=update.effective_chat.id, text=replies.verhouding(), parse_mode=ParseMode.HTML)
 
+def eat_callback(update, context):
+    context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
+    status = 0 if 'niet' in update.message.text.split() else -1
+    context.bot.send_message(chat_id=update.effective_chat.id, text=replies.set_eetlijst(update.effective_user.id, status), parse_mode=ParseMode.HTML)
+
 def unknown_callback(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id, text="Sorry, dat commando begreep ik niet.")
 
@@ -92,6 +97,7 @@ kok_handler = CommandHandler('kok', kok_callback)
 kookpunten_handler = CommandHandler('kookpunten', kookpunten_callback)
 kosten_handler = CommandHandler('kosten', kosten_callback)
 verhouding_handler = CommandHandler('verhouding', verhouding_callback)
+eat_handler = MessageHandler(Filters.regex(r'ik eet|mee') & (~Filters.command), eat_callback)
 unknown_handler = MessageHandler(Filters.command, unknown_callback)
 
 dispatcher.add_error_handler(error_callback)
@@ -101,6 +107,7 @@ dispatcher.add_handler(kok_handler)
 dispatcher.add_handler(kookpunten_handler)
 dispatcher.add_handler(kosten_handler)
 dispatcher.add_handler(verhouding_handler)
+dispatcher.add_handler(eat_handler)
 # The unknown_handler must be added last.
 dispatcher.add_handler(unknown_handler)
 
