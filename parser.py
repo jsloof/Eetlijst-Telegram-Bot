@@ -106,7 +106,7 @@ class Parser:
             persons[stripped_name] = os.environ[stripped_name]
         return persons
 
-    def set_eetlijst(self, user_id, status)
+    def set_eetlijst(self, user_id, status):
         user_ids = list(self.persons.values())
         person = user_ids.index(user_id)
         chrome_options = webdriver.ChromeOptions()

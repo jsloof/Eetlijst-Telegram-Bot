@@ -58,7 +58,7 @@ def verhouding():
     reply = zipped.replace('{','<b>Verhouding koken/eten:</b>\n<code>').replace(': \'','</code> (').replace('\', ',')\n<code>').replace('\'}',')')
     return reply
 
-def set_eetlijst(user_id, status)
+def set_eetlijst(user_id, status):
     ps = Parser()
     ps.set_eetlijst(user_id, status)
     if status == 0:
