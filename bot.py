@@ -60,7 +60,7 @@ def eetlijst_callback(update, context):
 
 def individual_callback(context):
     context.bot.send_message(chat_id=context.job.context['telegram_id'], text=f"{context.job.context['name']}, je moet je nog inschrijven op " \
-        "<a href='http://www.eetlijst.nl/login.php?login={EETLIJST_USER}&pass={EETLIJST_PASS}'>Eetlijst.nl</a>!" \
+        f"<a href='http://www.eetlijst.nl/login.php?login={EETLIJST_USER}&pass={EETLIJST_PASS}'>Eetlijst.nl</a>!" \
         , parse_mode=ParseMode.HTML)
 
 def kok_callback(update, context):
