@@ -19,7 +19,7 @@ def eetlijst():
         reply += " zich nog inschrijven.\n"
     unknown_persons = []
     for name in unknown:
-        unknown_persons.append(ps.persons[name])
+        unknown_persons.append({'name': name, 'telegram_id': ps.persons[name]})
     return {'reply': reply, 'unknown_persons': unknown_persons}
 
 def kok():

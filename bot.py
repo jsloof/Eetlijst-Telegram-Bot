@@ -1,12 +1,13 @@
 from telegram import ChatAction, ParseMode
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
-from telegram.error import TelegramError, Unauthorized, BadRequest, TimedOut, ChatMigrated, NetworkError
 from telegram.utils.helpers import mention_html
 import datetime, logging, os, pytz, replies, sys, traceback
 
 TELEGRAM_TOKEN = os.environ['TELEGRAM_TOKEN']
 TELEGRAM_DEV_ID = os.environ['TELEGRAM_DEV_ID']
 GROUP_CHAT_ID = os.environ['GROUP_CHAT_ID']
+EETLIJST_USER = os.environ['EETLIJST_USER']
+EETLIJST_PASS = os.environ['EETLIJST_PASS']
 
 updater = Updater(token=TELEGRAM_TOKEN, use_context=True)
 dispatcher = updater.dispatcher
@@ -58,7 +59,9 @@ def eetlijst_callback(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id, text=eetlijst['reply'], parse_mode=ParseMode.HTML)
 
 def individual_callback(context):
-    context.bot.send_message(chat_id=context.job.context, text='Je moet je nog inschrijven!')
+    context.bot.send_message(chat_id=context.job.context['telegram_id'], text=f"{context.job.context['name']}, je moet je nog inschrijven op " \
+        "<a href='http://www.eetlijst.nl/login.php?login={EETLIJST_USER}&pass={EETLIJST_PASS}'>Eetlijst.nl</a>!" \
+        , parse_mode=ParseMode.HTML)
 
 def kok_callback(update, context):
     context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
