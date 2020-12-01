@@ -60,9 +60,14 @@ def verhouding():
 
 def set_eetlijst(user_id, status):
     ps = Parser()
-    ps.set_eetlijst(user_id, status)
+    user_ids = list(ps.persons.values())
+    person_index = user_ids.index(str(user_id))
+    name = ps.names[person_index]
+    ps.set_eetlijst(person_index, status)
     if status == 0:
-        reply = "Oke, ik schrijf {} uit."
+        reply = f"Oke, ik schrijf {name} uit."
     elif status == -1:
-        reply = "Oke, ik schrijf {} in."
+        reply = f"Oke, ik zet {name} op mee-eten."
+    elif status == 1:
+        reply = f"Oke, ik zet {name} op koken."
     return reply
