@@ -10,7 +10,7 @@ def eetlijst():
         reply += ' en'.join(str(cook).replace('[','').replace('\'','').replace(']','').rsplit(',', 1))
         reply += " gaat" if len(cook) == 1 else " gaan"
         reply += " koken voor"
-        reply += " tot nu toe" if len(unknown) > 0
+        reply += " tot nu toe" if len(unknown) > 0 else ""
         reply += " alleen zichzelf.\n" if number == 1 else f" {number} personen.\n"
     if len(eaters) > 0:
         reply += ' en'.join(str(eaters).replace('[','').replace('\'','').replace(']','').rsplit(',', 1))
