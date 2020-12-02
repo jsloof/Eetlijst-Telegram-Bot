@@ -56,7 +56,7 @@ def eetlijst_callback(update, context):
     """The callback function for the eetlijst command."""
     context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
     eetlijst = replies.eetlijst()
-    if update.effective_chat.id == GROUP_CHAT_ID:
+    if str(update.effective_chat.id) == GROUP_CHAT_ID:
         for person in eetlijst['unknown_persons']:
             context.job_queue.run_once(individual_callback, 0, context=person)
     context.bot.send_message(chat_id=update.effective_chat.id, text=eetlijst['reply'], parse_mode=ParseMode.HTML)
