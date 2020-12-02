@@ -12,11 +12,11 @@ class Parser:
         login_url = 'http://eetlijst.nl/login.php'
         login_data = {'login': eetlijst_user, 'pass': eetlijst_pass}
         main_page = requests.post(login_url, data=login_data)
-        self.soup_main_page = BeautifulSoup(main_page.content, "html.parser")
+        self.soup_main_page = BeautifulSoup(main_page.content, 'html.parser')
 
         kosten_url = self.soup_main_page.find_all('a')[2]['href']
         kosten_page = requests.get('http://eetlijst.nl/' + kosten_url)
-        self.soup_kosten_page = BeautifulSoup(kosten_page.content, "html.parser")
+        self.soup_kosten_page = BeautifulSoup(kosten_page.content, 'html.parser')
         self.session_id = re.split('\W', kosten_url)[-1]
 
         self.persons = self.get_persons()
@@ -62,7 +62,7 @@ class Parser:
         ratio = self.get_ratio()
         ratio_sorted = sorted(ratio)
         potential_cooks = list(set(self.get_eaters() + self.get_unknown()))
-        name = ""
+        name = ''
         for r in ratio_sorted:
             index = ratio.index(r)
             name = self.names[index]
@@ -73,8 +73,8 @@ class Parser:
     def get_ratio(self):
         """Returns a list with the ratio cook/eat per person."""
         list_ratio = []
-        all_times_cook = self.soup_kosten_page.find('td', text='  Aantal keer gekookt').parent.find_all('td', class_="r")
-        all_times_eat = self.soup_kosten_page.find('td', text='  Aantal keer meegegeten').parent.find_all('td', class_="r")
+        all_times_cook = self.soup_kosten_page.find('td', text='  Aantal keer gekookt').parent.find_all('td', class_='r')
+        all_times_eat = self.soup_kosten_page.find('td', text='  Aantal keer meegegeten').parent.find_all('td', class_='r')
         for i in range(len(all_times_cook)):
             times_cook = int(all_times_cook[i].text)
             times_eat = int(all_times_eat[i].text)
@@ -84,7 +84,7 @@ class Parser:
     def get_costs(self):
         """Returns a list with the average meal costs per person."""
         list_costs = []
-        all_costs = self.soup_kosten_page.find('td', text='  Kookt gemiddeld voor (p.p.)').parent.find_all('td', class_="r")[0:-1]
+        all_costs = self.soup_kosten_page.find('td', text='  Kookt gemiddeld voor (p.p.)').parent.find_all('td', class_='r')[0:-1]
         for i in range(len(all_costs)):
             list_costs.append(all_costs[i].text.strip())
         return list_costs
@@ -92,7 +92,7 @@ class Parser:
     def get_points(self):
         """Returns a list with the cooking points per person."""
         list_points = []
-        all_points = self.soup_kosten_page.find_all('td', class_="l", colspan='3')[-1].parent.find_all('td', class_="r")[0:-1]
+        all_points = self.soup_kosten_page.find_all('td', class_='l', colspan='3')[-1].parent.find_all('td', class_='r')[0:-1]
         for i in range(len(all_points)):
             list_points.append(all_points[i].text.strip())
         return list_points
@@ -107,6 +107,7 @@ class Parser:
         return persons
 
     def set_eetlijst(self, person_index, status):
+        """Updates the status of the person at Eetlijst."""
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_argument('--headless')
         chrome_options.add_argument('--disable-dev-shm-usage')
@@ -114,6 +115,6 @@ class Parser:
         chrome_options.binary_location = os.environ['GOOGLE_CHROME_BIN']
         driver = webdriver.Chrome(executable_path=os.environ['CHROMEDRIVER_PATH'], chrome_options=chrome_options)
         driver.get(f'http://www.eetlijst.nl/main.php?session_id={self.session_id}&who={person_index}&what={status}')
-        elem = driver.find_element_by_name("submitwithform")
+        elem = driver.find_element_by_name('submitwithform')
         elem.click()
         driver.quit()
