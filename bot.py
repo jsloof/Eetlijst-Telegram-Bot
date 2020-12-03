@@ -1,5 +1,5 @@
-from telegram import ChatAction, ParseMode
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from telegram import ChatAction, ParseMode, ReplyKeyboardMarkup
+from telegram.ext import CommandHandler, Filters, MessageHandler, Updater
 from telegram.utils.helpers import mention_html
 import datetime, logging, os, pytz, re, replies, sys, traceback
 
@@ -64,8 +64,10 @@ def eetlijst_callback(update, context):
 def individual_callback(context):
     """The callback function for the individual messages."""
     context.bot.send_chat_action(chat_id=context.job.context['telegram_id'], action=ChatAction.TYPING)
+    custom_keyboard = ['Ik eet mee', 'Ik eet niet mee']
+    reply_markup = ReplyKeyboardMarkup(custom_keyboard)
     context.bot.send_message(chat_id=context.job.context['telegram_id'], text=f'{context.job.context["name"]}, je moet je nog inschrijven op Eetlijst!\n' \
-        'Je kunt reageren met <i>ik eet mee</i> of <i>ik eet niet mee</i>.', parse_mode=ParseMode.HTML)
+        'Je kunt reageren met <i>ik eet mee</i> of <i>ik eet niet mee</i>.', parse_mode=ParseMode.HTML, reply_markup=reply_markup)
 
 def kok_callback(update, context):
     """The callback function for the kok command."""
