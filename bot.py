@@ -84,8 +84,11 @@ def kosten_callback(update, context):
 
 def reminder_callback(context):
     """The callback function for the reminder."""
-    context.bot.send_chat_action(chat_id=context.job.context, action=ChatAction.TYPING)
-    context.bot.send_message(chat_id=context.job.context, text=replies.eetlijst()['reply'], parse_mode=ParseMode.HTML)
+    context.bot.send_chat_action(chat_id=GROUP_CHAT_ID, action=ChatAction.TYPING)
+    eetlijst = replies.eetlijst()
+    for person in eetlijst['unknown_persons']:
+        context.job_queue.run_once(individual_callback, 0, context=person)
+    context.bot.send_message(chat_id=GROUP_CHAT_ID, text=eetlijst['reply'], parse_mode=ParseMode.HTML)
 
 def verhouding_callback(update, context):
     """The callback function for the verhouding command."""
@@ -106,6 +109,7 @@ def eat_callback(update, context):
 
 def unknown_callback(update, context):
     """The callback function for unknown commands."""
+    context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
     context.bot.send_message(chat_id=update.effective_chat.id, text='Sorry, dat commando begreep ik niet.')
 
 start_handler = CommandHandler('start', start_callback)
@@ -130,7 +134,7 @@ dispatcher.add_handler(eat_handler)
 # The unknown_handler must be added last.
 dispatcher.add_handler(unknown_handler)
 
-job_queue.run_daily(reminder_callback, datetime.time(hour=15, tzinfo=pytz.timezone('Europe/Amsterdam')), context=GROUP_CHAT_ID)
+job_queue.run_daily(reminder_callback, datetime.time(hour=15, tzinfo=pytz.timezone('Europe/Amsterdam')))
 
 updater.start_polling()
 updater.idle()
