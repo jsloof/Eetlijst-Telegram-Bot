@@ -64,7 +64,7 @@ def eetlijst_callback(update, context):
 def individual_callback(context):
     """The callback function for the individual messages."""
     context.bot.send_chat_action(chat_id=context.job.context['telegram_id'], action=ChatAction.TYPING)
-    custom_keyboard = ['Ik eet mee', 'Ik eet niet mee']
+    custom_keyboard = [['Ik eet mee🍝'], ['Ik eet niet mee🙅🏼‍♂️'], ['Ik kook👨🏼‍🍳']]
     reply_markup = ReplyKeyboardMarkup(custom_keyboard)
     context.bot.send_message(chat_id=context.job.context['telegram_id'], text=f'{context.job.context["name"]}, je moet je nog inschrijven op Eetlijst!\n' \
         'Je kunt reageren met <i>ik eet mee</i> of <i>ik eet niet mee</i>.', parse_mode=ParseMode.HTML, reply_markup=reply_markup)
