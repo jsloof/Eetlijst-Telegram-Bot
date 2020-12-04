@@ -63,11 +63,13 @@ def eetlijst_callback(update, context):
 
 def individual_callback(context):
     """The callback function for the individual messages."""
-    context.bot.send_chat_action(chat_id=context.job.context['telegram_id'], action=ChatAction.TYPING)
-    custom_keyboard = [['Ik eet mee🍝'], ['Ik eet niet mee🙅🏼‍♂️'], ['Ik kook👨🏼‍🍳']]
-    reply_markup = ReplyKeyboardMarkup(custom_keyboard)
-    context.bot.send_message(chat_id=context.job.context['telegram_id'], text=f'{context.job.context["name"]}, je moet je nog inschrijven voor de maaltijd!\n' \
-        'Je kunt reageren in deze chat.', parse_mode=ParseMode.HTML, reply_markup=reply_markup)
+    person = context.job.context
+    if person['telegram_id'] != '':
+        context.bot.send_chat_action(chat_id=person['telegram_id'], action=ChatAction.TYPING)
+        custom_keyboard = [['Ik eet mee🍝'], ['Ik eet niet mee🙅🏼‍♂️'], ['Ik kook👨🏼‍🍳']]
+        reply_markup = ReplyKeyboardMarkup(custom_keyboard)
+        context.bot.send_message(chat_id=person['telegram_id'], text=f'{person["name"]}, je moet je nog inschrijven voor de maaltijd!\n' \
+            'Je kunt reageren in deze chat.', parse_mode=ParseMode.HTML, reply_markup=reply_markup)
 
 def kok_callback(update, context):
     """The callback function for the kok command."""

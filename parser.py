@@ -106,7 +106,11 @@ class Parser:
         all_names = self.soup_kosten_page.find('th', colspan='3').parent.find_all('th')[1:-1]
         for name in all_names:
             stripped_name = name.text.strip()
-            persons[stripped_name] = os.environ[stripped_name]
+            try:
+                telegram_id = os.environ[stripped_name]
+            except:
+                telegram_id = ''
+            persons[stripped_name] = telegram_id
         return persons
 
     def set_eetlijst(self, person_index, status):
