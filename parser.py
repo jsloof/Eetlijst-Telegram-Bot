@@ -110,7 +110,7 @@ class Parser:
         """Updates the status of the person at Eetlijst."""
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_argument('--disable-dev-shm-usage')
-        chrome_options.binary_location = os.environ['GOOGLE_CHROME_BIN']
+        chrome_options.binary_location = '/app/.apt/usr/bin/google-chrome'
         driver = webdriver.Chrome(executable_path='/app/.chromedriver/bin/chromedriver', chrome_options=chrome_options)
         driver.get(f'http://www.eetlijst.nl/main.php?session_id={self.session_id}&who={person_index}&what={status}')
         elem = driver.find_element_by_name('submitwithform')

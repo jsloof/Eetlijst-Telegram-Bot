@@ -81,5 +81,5 @@ def set_eetlijst(user_id, status):
             elif status == 1:
                 reply = f'Oke, ik zet {name} op koken.'
         except:
-            reply = 'Sorry, je bent niet bevoegd om de eetlijst aan te passen.'
+            reply = 'Sorry, het is niet gelukt om je status aan te passen.'
     return reply
