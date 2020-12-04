@@ -45,22 +45,28 @@ def kok():
 def kookpunten():
     """Replies the cooking points per person."""
     ps = Parser()
-    zipped = str(dict(zip(ps.get_points(), ps.names)))
-    reply = zipped.replace('{\'','<b>Kookpunten:</b>\n<code>').replace('\': \'','</code> (').replace('\', \'',')\n<code>').replace('\'}',')')
+    points = ps.get_points()
+    reply = '<b>Kookpunten:</b>\n'
+    for index, name in enumerate(ps.names):
+        reply += f'<code>{points[index]}</code> ({name})\n'
     return reply
 
 def kosten():
     """Replies the average meal costs per person."""
     ps = Parser()
-    zipped = str(dict(zip(ps.get_costs(), ps.names)))
-    reply = zipped.replace('{\'','<b>Gemiddelde kosten:</b>\n<code>€').replace('\': \'','</code> (').replace('\', \'',')\n<code>€').replace('\'}',')')
+    costs = ps.get_costs()
+    reply = '<b>Gemiddelde kosten:</b>\n'
+    for index, name in enumerate(ps.names):
+        reply += f'<code>€{costs[index]}</code> ({name})\n'
     return reply
 
 def verhouding():
     """Replies the ratio cook/eat per person."""
     ps = Parser()
-    zipped = str(dict(zip(ps.get_ratio(), ps.names)))
-    reply = zipped.replace('{','<b>Verhouding koken/eten:</b>\n<code>').replace(': \'','</code> (').replace('\', ',')\n<code>').replace('\'}',')')
+    ratio = ps.get_ratio()
+    reply = '<b>Verhouding koken/eten:</b>\n'
+    for index, name in enumerate(ps.names):
+        reply += f'<code>{ratio[index]}</code> ({name})\n'
     return reply
 
 def set_eetlijst(user_id, status):

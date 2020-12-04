@@ -78,7 +78,10 @@ class Parser:
         for i in range(len(all_times_cook)):
             times_cook = int(all_times_cook[i].text)
             times_eat = int(all_times_eat[i].text)
-            list_ratio.append(round(times_cook / times_eat, 3))
+            if times_eat == 0:
+                list_ratio.append(0.000)
+            else:
+                list_ratio.append(round(times_cook / times_eat, 3))
         return list_ratio
 
     def get_costs(self):
