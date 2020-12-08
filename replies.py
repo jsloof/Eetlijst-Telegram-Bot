@@ -4,21 +4,42 @@ def eetlijst():
     """Replies a dict with the status per person and the unknown persons."""
     ps = Parser()
     eaters, cook, absent, unknown = ps.eetlijst
+    present = eaters + cook
+    number = len(present)
+    for person in ps.names:
+        guests = present.count(person) - 1
+        if guests > 0:
+            if person in cook:
+                if guests == 1:
+                    eaters[eaters.index(person)] = f'1 mee-eter van {person}'
+                elif guests == 2:
+                    eaters[eaters.index(person)] = f'2 mee-eters van {person}'
+                else:
+                    eaters[eaters.index(person)] = f'3 (of meer) mee-eters van {person}'
+                    number = f'{number} (of meer)'
+            else:
+                if guests == 1:
+                    eaters[eaters.index(person)] = f'{person} +1 mee-eter'
+                elif guests == 2:
+                    eaters[eaters.index(person)] = f'{person} +2 mee-eters'
+                else:
+                    eaters[eaters.index(person)] = f'{person} +3 (of meer) mee-eters'
+                    number = f'{number} (of meer)'
+            eaters = list(filter((person).__ne__, eaters))
     reply = ''
     unknown_persons = []
     if len(cook) > 0:
-        number = len(eaters + cook)
-        reply += ' en'.join(str(cook).replace('[','').replace('\'','').replace(']','').rsplit(',', 1))
+        reply += f'{names_to_str(cook)}'
         reply += ' gaat' if len(cook) == 1 else ' gaan'
         reply += ' koken voor'
         reply += ' tot nu toe' if len(unknown) > 0 else ''
         reply += ' alleen zichzelf.\n' if number == 1 else f' {number} personen.\n'
     if len(eaters) > 0:
-        reply += ' en'.join(str(eaters).replace('[','').replace('\'','').replace(']','').rsplit(',', 1))
+        reply += f'{names_to_str(eaters)}'
         reply += ' eet' if len(eaters) == 1 else ' eten'
         reply += ' mee.\n'
     if len(unknown) > 0:
-        reply += ' en'.join(str(unknown).replace('[','').replace('\'','').replace(']','').rsplit(',', 1))
+        reply += f'{names_to_str(unknown)}'
         reply += ' moet' if len(unknown) == 1 else ' moeten'
         reply += ' zich nog inschrijven.\n'
         for name in unknown:
@@ -37,7 +58,7 @@ def kok():
         else:
             reply = f'Er gaat nog niemand koken.\n{ps.get_cook_suggestion()} staat het laagst qua verhouding.'
     else:
-        reply = ' en'.join(str(cook).replace('[','').replace('\'','').replace(']','').rsplit(',', 1))
+        reply = f'{names_to_str(cook)}'
         reply += ' gaat' if len(cook) == 1 else ' gaan'
         reply += ' koken.'
     return reply
@@ -68,6 +89,9 @@ def verhouding():
     for index, name in enumerate(ps.names):
         reply += f'<code>{ratio[index]}</code> ({name})\n'
     return reply
+
+def names_to_str(list):
+    return ' en'.join(str(list).replace('[','').replace('\'','').replace(']','').rsplit(',', 1))
 
 def set_eetlijst(user_id, status):
     """Replies the status update of the person."""
