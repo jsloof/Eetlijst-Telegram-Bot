@@ -100,6 +100,14 @@ class Parser:
             list_points.append(all_points[i].text.strip())
         return list_points
 
+    def get_expenses(self):
+        """Returns a list with the total expenses per person."""
+        list_expenses = []
+        all_expenses = self.soup_kosten_page.find_all('tr', bgcolor='#DDDDDD')[0].find_all('td')[2:]
+        for i in range(len(all_expenses)):
+            list_expenses.append(all_expenses[i].text.strip())
+        return list_expenses
+
     def get_persons(self):
         """Returns a dict with the names and telegram_ids of the persons."""
         persons = {}

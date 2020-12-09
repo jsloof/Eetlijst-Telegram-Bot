@@ -52,6 +52,11 @@ def start_callback(update, context):
     context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
     context.bot.send_message(chat_id=update.effective_chat.id, text=f'Hallo {update.effective_user.first_name}')
 
+def balans_callback(update, context):
+    """The callback function for the balans command."""
+    context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
+    context.bot.send_message(chat_id=update.effective_chat.id, text=replies.balans(), parse_mode=ParseMode.HTML)
+
 def eetlijst_callback(update, context):
     """The callback function for the eetlijst command."""
     context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
@@ -101,14 +106,33 @@ def verhouding_callback(update, context):
 
 def cook_callback(update, context):
     """The callback function for the cook message."""
-    if 'niet' not in update.message.text.split():
+    if re.search('niet', update.message.text, re.IGNORECASE) == None:
         context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
-        context.bot.send_message(chat_id=update.effective_chat.id, text=replies.set_eetlijst(update.effective_user.id, 1), parse_mode=ParseMode.HTML)
+        guests = re.search(r'met \d+', update.message.text, re.IGNORECASE)
+        if guests != None:
+            number = int(guests.split()[1])
+            if number < 3:
+                status = number + 1
+            else:
+                status = 4
+        else:
+            status = 1
+        context.bot.send_message(chat_id=update.effective_chat.id, text=replies.set_eetlijst(update.effective_user.id, status), parse_mode=ParseMode.HTML)
 
 def eat_callback(update, context):
     """The callback function for the eat message."""
     context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
-    status = 0 if 'niet' in update.message.text.split() else -1
+    guests = re.search(r'met \d+', update.message.text, re.IGNORECASE)
+    if re.search('niet', update.message.text, re.IGNORECASE) != None:
+        status = 0
+    elif guests != None:
+        number = int(guests.split()[1])
+        if number < 3:
+            status = -1 * (number + 1)
+        else:
+            status = -4
+    else:
+        status = -1
     context.bot.send_message(chat_id=update.effective_chat.id, text=replies.set_eetlijst(update.effective_user.id, status), parse_mode=ParseMode.HTML)
 
 def unknown_callback(update, context):
@@ -117,6 +141,7 @@ def unknown_callback(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id, text='Sorry, dat commando begreep ik niet.')
 
 start_handler = CommandHandler('start', start_callback)
+balans_handler = CommandHandler('balans', balans_callback)
 eetlijst_handler = CommandHandler('eetlijst', eetlijst_callback)
 kok_handler = CommandHandler('kok', kok_callback)
 kookpunten_handler = CommandHandler('kookpunten', kookpunten_callback)
@@ -128,6 +153,7 @@ unknown_handler = MessageHandler(Filters.command, unknown_callback)
 
 dispatcher.add_error_handler(error_callback)
 dispatcher.add_handler(start_handler)
+dispatcher.add_handler(balans_handler)
 dispatcher.add_handler(eetlijst_handler)
 dispatcher.add_handler(kok_handler)
 dispatcher.add_handler(kookpunten_handler)

@@ -1,5 +1,14 @@
 from parser import Parser
 
+def balans():
+    """Replies the total expenses per person."""
+    ps = Parser()
+    expenses = ps.get_expenses()
+    reply = '<b>Balans:</b>\n'
+    for index, name in enumerate(ps.names):
+        reply += f'<code>€{expenses[index]}</code> ({name})\n'
+    return reply
+
 def eetlijst():
     """Replies a dict with the status per person and the unknown persons."""
     ps = Parser()
@@ -96,20 +105,27 @@ def names_to_str(list):
 def set_eetlijst(user_id, status):
     """Replies the status update of the person."""
     ps = Parser()
-    if status == 1 and len(ps.get_cook()) > 0:
-        reply = 'Sorry, er gaat al iemand koken.'
+    if status > 0 and len(ps.get_cook()) > 0:
+        return 'Sorry, er gaat al iemand koken.'
     else:
         try:
             user_ids = list(ps.persons.values())
             person_index = user_ids.index(str(user_id))
             name = ps.names[person_index]
             ps.set_eetlijst(person_index, status)
-            if status == 0:
-                reply = f'Oke, ik schrijf {name} uit.'
-            elif status == -1:
-                reply = f'Oke, ik zet {name} op mee-eten.'
-            elif status == 1:
-                reply = f'Oke, ik zet {name} op koken.'
+            if status < 0:
+                reply = f'Oke, ik zet {name} op mee-eten'
+            elif status > 0:
+                reply = f'Oke, ik zet {name} op koken'
+            else:
+                return f'Oke, ik schrijf {name} uit.'
+            guests = abs(status) - 1
+            if guests == 1:
+                reply += ' met 1 gast'
+            elif guests == 2:
+                reply += ' met 2 gasten'
+            elif guests == 3:
+                reply += ' met 3 (of meer) gasten'
         except:
-            reply = 'Sorry, het is niet gelukt om je status aan te passen.'
-    return reply
+            return 'Sorry, het is niet gelukt om je status aan te passen.'
+    return reply + '.'
