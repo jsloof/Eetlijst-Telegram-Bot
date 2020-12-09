@@ -1,0 +1,6 @@
+eetlijst - Wie zijn ingeschreven?
+kok - Wie moet koken?
+balans - Totale uitgaven p.p.
+kookpunten - Kookpunten p.p.
+kosten - Gemiddelde kosten p.p.
+verhouding - Verhouding koken/eten p.p.
