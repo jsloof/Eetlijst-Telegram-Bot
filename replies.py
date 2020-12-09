@@ -4,9 +4,9 @@ def balans():
     """Replies the total expenses per person."""
     ps = Parser()
     expenses = ps.get_expenses()
-    reply = '<b>Balans:</b>\n'
+    reply = '<b>Balans (in €):</b>\n'
     for index, name in enumerate(ps.names):
-        reply += f'<code>€{expenses[index]}</code> ({name})\n'
+        reply += f'<code>{expenses[index]}</code> ({name})\n'
     return reply
 
 def eetlijst():

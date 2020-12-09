@@ -108,7 +108,7 @@ def cook_callback(update, context):
     """The callback function for the cook message."""
     if re.search('niet', update.message.text, re.IGNORECASE) == None:
         context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
-        guests = re.search(r'met( nog)? \d+', update.message.text, re.IGNORECASE)
+        guests = re.search(r'met(.)* \d+', update.message.text, re.IGNORECASE)
         if guests != None:
             number = int(guests.group().split()[-1])
             if number < 3:
@@ -122,7 +122,7 @@ def cook_callback(update, context):
 def eat_callback(update, context):
     """The callback function for the eat message."""
     context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
-    guests = re.search(r'met( nog)? \d+', update.message.text, re.IGNORECASE)
+    guests = re.search(r'met(.)* \d+', update.message.text, re.IGNORECASE)
     if re.search('niet', update.message.text, re.IGNORECASE) != None:
         status = 0
     elif guests != None:
