@@ -2,11 +2,9 @@ from parser import Parser
 
 def balans():
     """Replies the total expenses per person."""
-    ps = Parser()
-    expenses = ps.get_expenses()
     reply = '<b>Balans (in €):</b>\n'
-    for index, name in enumerate(ps.names):
-        reply += f'<code>{expenses[index]}</code> ({name})\n'
+    for expenses, name in Parser().get_expenses():
+        reply += f'<code>{"%.2f" % expenses}</code> ({name})\n'
     return reply
 
 def eetlijst():
@@ -74,29 +72,23 @@ def kok():
 
 def kookpunten():
     """Replies the cooking points per person."""
-    ps = Parser()
-    points = ps.get_points()
     reply = '<b>Kookpunten:</b>\n'
-    for index, name in enumerate(ps.names):
-        reply += f'<code>{points[index]}</code> ({name})\n'
+    for points, name in Parser().get_points():
+        reply += f'<code>{points}</code> ({name})\n'
     return reply
 
 def kosten():
     """Replies the average meal costs per person."""
-    ps = Parser()
-    costs = ps.get_costs()
     reply = '<b>Gemiddelde kosten:</b>\n'
-    for index, name in enumerate(ps.names):
-        reply += f'<code>€{costs[index]}</code> ({name})\n'
+    for costs, name in Parser().get_costs():
+        reply += f'<code>€{"%.2f" % costs}</code> ({name})\n'
     return reply
 
 def verhouding():
     """Replies the ratio cook/eat per person."""
-    ps = Parser()
-    ratio = ps.get_ratio()
     reply = '<b>Verhouding koken/eten:</b>\n'
-    for index, name in enumerate(ps.names):
-        reply += f'<code>{ratio[index]}</code> ({name})\n'
+    for ratio, name in Parser().get_ratios():
+        reply += f'<code>{"%.3f" % ratio}</code> ({name})\n'
     return reply
 
 def names_to_str(list):
@@ -112,20 +104,22 @@ def set_eetlijst(user_id, status):
             user_ids = list(ps.persons.values())
             person_index = user_ids.index(str(user_id))
             name = ps.names[person_index]
-            ps.set_eetlijst(person_index, status)
             if status < 0:
                 reply = f'Oke, ik zet {name} op mee-eten'
             elif status > 0:
                 reply = f'Oke, ik zet {name} op koken'
             else:
+                ps.set_eetlijst(person_index, 0)
                 return f'Oke, ik schrijf {name} uit.'
-            guests = abs(status) - 1
-            if guests == 1:
+            total = abs(status)
+            if total == 2:
                 reply += ' met 1 gast'
-            elif guests == 2:
+            elif total == 3:
                 reply += ' met 2 gasten'
-            elif guests == 3:
+            elif total > 3:
                 reply += ' met 3 (of meer) gasten'
+                status = -4 if status < 0 else status = 4
+            ps.set_eetlijst(person_index, status)
         except:
             return 'Sorry, het is niet gelukt om je status aan te passen.'
     return reply + '.'

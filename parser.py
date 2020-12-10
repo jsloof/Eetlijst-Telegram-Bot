@@ -70,43 +70,46 @@ class Parser:
                 break
         return name
 
-    def get_ratio(self):
+    def get_ratios(self):
         """Returns a list with the ratio cook/eat per person."""
         list_ratio = []
         all_times_cook = self.soup_kosten_page.find('td', text='  Aantal keer gekookt').parent.find_all('td', class_='r')
         all_times_eat = self.soup_kosten_page.find('td', text='  Aantal keer meegegeten').parent.find_all('td', class_='r')
-        for i in range(len(all_times_cook)):
-            times_cook = int(all_times_cook[i].text)
-            times_eat = int(all_times_eat[i].text)
+        for index, name in enumerate(ps.names):
+            times_cook = int(all_times_cook[index].text)
+            times_eat = int(all_times_eat[index].text)
             if times_eat == 0:
-                list_ratio.append(0.000)
+                list_ratio.append((0.0, name))
             else:
-                list_ratio.append(round(times_cook / times_eat, 3))
-        return list_ratio
+                list_ratio.append((times_cook / times_eat, name))
+        return sorted(list_ratio, key=lambda x : x[0])
 
     def get_costs(self):
         """Returns a list with the average meal costs per person."""
         list_costs = []
         all_costs = self.soup_kosten_page.find('td', text='  Kookt gemiddeld voor (p.p.)').parent.find_all('td', class_='r')[0:-1]
-        for i in range(len(all_costs)):
-            list_costs.append(all_costs[i].text.strip())
-        return list_costs
+        for index, name in enumerate(ps.names):
+            costs = float(all_costs[index].text.strip().replace(',','.'))
+            list_costs.append((costs, name))
+        return sorted(list_costs, key=lambda x : x[0])
 
     def get_points(self):
         """Returns a list with the cooking points per person."""
         list_points = []
         all_points = self.soup_kosten_page.find_all('td', class_='l', colspan='3')[-1].parent.find_all('td', class_='r')[0:-1]
-        for i in range(len(all_points)):
-            list_points.append(all_points[i].text.strip())
-        return list_points
+        for index, name in enumerate(ps.names):
+            points = int(all_points[index].text.strip())
+            list_points.append((points, name))
+        return sorted(list_points, key=lambda x : x[0])
 
     def get_expenses(self):
         """Returns a list with the total expenses per person."""
         list_expenses = []
         all_expenses = self.soup_kosten_page.find_all('tr', bgcolor='#DDDDDD')[0].find_all('td')[2:]
-        for i in range(len(all_expenses)):
-            list_expenses.append(all_expenses[i].text.strip())
-        return list_expenses
+        for index, name in enumerate(ps.names):
+            expenses = float(all_expenses[index].text.strip().replace(',','.'))
+            list_expenses.append((expenses, name))
+        return sorted(list_expenses, key=lambda x : x[0])
 
     def get_persons(self):
         """Returns a dict with the names and telegram_ids of the persons."""

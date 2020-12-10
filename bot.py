@@ -110,11 +110,7 @@ def cook_callback(update, context):
         context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
         guests = re.search(r'met(.)* \d+', update.message.text, re.IGNORECASE)
         if guests != None:
-            number = int(guests.group().split()[-1])
-            if number < 3:
-                status = number + 1
-            else:
-                status = 4
+            status = int(guests.group().split()[-1]) + 1
         else:
             status = 1
         context.bot.send_message(chat_id=update.effective_chat.id, text=replies.set_eetlijst(update.effective_user.id, status), parse_mode=ParseMode.HTML)
@@ -126,11 +122,7 @@ def eat_callback(update, context):
     if re.search('niet', update.message.text, re.IGNORECASE) != None:
         status = 0
     elif guests != None:
-        number = int(guests.group().split()[-1])
-        if number < 3:
-            status = -1 * (number + 1)
-        else:
-            status = -4
+        status = -1 * (int(guests.group().split()[-1]) + 1)
     else:
         status = -1
     context.bot.send_message(chat_id=update.effective_chat.id, text=replies.set_eetlijst(update.effective_user.id, status), parse_mode=ParseMode.HTML)
