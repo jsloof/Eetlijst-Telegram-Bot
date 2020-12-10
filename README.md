@@ -6,9 +6,9 @@ It replies to direct messages and commands in groups.
 Use the following commands:
 - `/eetlijst`: Wie zijn ingeschreven?
 - `/kok`: Wie moet koken?
-- `/balans`: Totale uitgaven p.p.
+- `/balans`: Verschuldigde bedrag p.p.
 - `/kookpunten`: Kookpunten p.p.
-- `/kosten`: Gemiddelde kosten p.p.
+- `/kookkosten`: Gemiddelde kookkosten p.p.
 - `/verhouding`: Verhouding koken/eten p.p.
 
 ## Deployment
