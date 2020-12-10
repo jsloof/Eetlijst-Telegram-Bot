@@ -1,12 +1,5 @@
 from parser import Parser
 
-def balans():
-    """Replies the total expenses per person."""
-    reply = '<b>Balans (in €):</b>\n'
-    for expenses, name in Parser().get_expenses():
-        reply += f'<code>{"%.2f" % expenses}</code> ({name})\n'
-    return reply
-
 def eetlijst():
     """Replies a dict with the status per person and the unknown persons."""
     ps = Parser()
@@ -70,18 +63,29 @@ def kok():
         reply += ' koken.'
     return reply
 
+def balans():
+    """Replies the owed amount per person."""
+    reply = '<b>Balans:</b>\n'
+    for amount, name in Parser().get_owed_amount():
+        if amount < 0:
+            reply += f'<code>-€{"%.2f" % -amount}</code> ({name})\n'
+        else:
+            reply += f'<code> €{"%.2f" % amount}</code> ({name})\n'
+    return reply
+
+def kookkosten():
+    """Replies the average meal costs per person."""
+    reply = '<b>Gemiddelde kookkosten:</b>\n'
+    for costs, name in Parser().get_costs():
+        reply += f'<code>€{"%.2f" % costs}</code> ({name})\n'
+    return reply
+
 def kookpunten():
     """Replies the cooking points per person."""
     reply = '<b>Kookpunten:</b>\n'
     for points, name in Parser().get_points():
-        reply += f'<code>{points}</code> ({name})\n'
-    return reply
-
-def kosten():
-    """Replies the average meal costs per person."""
-    reply = '<b>Gemiddelde kosten:</b>\n'
-    for costs, name in Parser().get_costs():
-        reply += f'<code>€{"%.2f" % costs}</code> ({name})\n'
+        reply += '<code>' if points < 0 else '<code> '
+        reply += f'{points}</code> ({name})\n'
     return reply
 
 def verhouding():
@@ -118,7 +122,10 @@ def set_eetlijst(user_id, status):
                 reply += ' met 2 gasten'
             elif total > 3:
                 reply += ' met 3 (of meer) gasten'
-                status = -4 if status < 0 else status = 4
+                if status < 0:
+                    status = -4
+                else:
+                    status = 4
             ps.set_eetlijst(person_index, status)
         except:
             return 'Sorry, het is niet gelukt om je status aan te passen.'

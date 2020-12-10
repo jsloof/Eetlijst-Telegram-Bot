@@ -81,15 +81,15 @@ def kok_callback(update, context):
     context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
     context.bot.send_message(chat_id=update.effective_chat.id, text=replies.kok(), parse_mode=ParseMode.HTML)
 
+def kookkosten_callback(update, context):
+    """The callback function for the kookkosten command."""
+    context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
+    context.bot.send_message(chat_id=update.effective_chat.id, text=replies.kookkosten(), parse_mode=ParseMode.HTML)
+
 def kookpunten_callback(update, context):
     """The callback function for the kookpunten command."""
     context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
     context.bot.send_message(chat_id=update.effective_chat.id, text=replies.kookpunten(), parse_mode=ParseMode.HTML)
-
-def kosten_callback(update, context):
-    """The callback function for the kosten command."""
-    context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
-    context.bot.send_message(chat_id=update.effective_chat.id, text=replies.kosten(), parse_mode=ParseMode.HTML)
 
 def reminder_callback(context):
     """The callback function for the reminder."""
@@ -136,8 +136,8 @@ start_handler = CommandHandler('start', start_callback)
 balans_handler = CommandHandler('balans', balans_callback)
 eetlijst_handler = CommandHandler('eetlijst', eetlijst_callback)
 kok_handler = CommandHandler('kok', kok_callback)
+kookkosten_handler = CommandHandler('kookkosten', kookkosten_callback)
 kookpunten_handler = CommandHandler('kookpunten', kookpunten_callback)
-kosten_handler = CommandHandler('kosten', kosten_callback)
 verhouding_handler = CommandHandler('verhouding', verhouding_callback)
 cook_handler = MessageHandler(Filters.regex(re.compile(r'(ik).+(kook|koken)', re.IGNORECASE)), cook_callback)
 eat_handler = MessageHandler(Filters.regex(re.compile(r'(ik).+((eet).+(mee)|(mee-eten|meeeten))', re.IGNORECASE)), eat_callback)
@@ -148,8 +148,8 @@ dispatcher.add_handler(start_handler)
 dispatcher.add_handler(balans_handler)
 dispatcher.add_handler(eetlijst_handler)
 dispatcher.add_handler(kok_handler)
+dispatcher.add_handler(kookkosten_handler)
 dispatcher.add_handler(kookpunten_handler)
-dispatcher.add_handler(kosten_handler)
 dispatcher.add_handler(verhouding_handler)
 dispatcher.add_handler(cook_handler)
 dispatcher.add_handler(eat_handler)

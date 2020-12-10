@@ -59,13 +59,9 @@ class Parser:
 
     def get_cook_suggestion(self):
         """Returns the name of the person with the lowest cook/eat ratio."""
-        ratio = self.get_ratio()
-        ratio_sorted = sorted(ratio)
         potential_cooks = list(set(self.get_eaters() + self.get_unknown()))
         name = ''
-        for r in ratio_sorted:
-            index = ratio.index(r)
-            name = self.names[index]
+        for ratio, name in self.get_ratios():
             if name in potential_cooks:
                 break
         return name
@@ -102,14 +98,14 @@ class Parser:
             list_points.append((points, name))
         return sorted(list_points, key=lambda x : x[0])
 
-    def get_expenses(self):
-        """Returns a list with the total expenses per person."""
-        list_expenses = []
-        all_expenses = self.soup_kosten_page.find_all('tr', bgcolor='#DDDDDD')[0].find_all('td')[2:]
+    def get_owed_amount(self):
+        """Returns a list with the owed amount per person."""
+        list_owed_amount = []
+        all_owed_amount = self.soup_kosten_page.find_all('tr', bgcolor='#DDDDDD')[0].find_all('td')[2:]
         for index, name in enumerate(ps.names):
-            expenses = float(all_expenses[index].text.strip().replace(',','.'))
-            list_expenses.append((expenses, name))
-        return sorted(list_expenses, key=lambda x : x[0])
+            amount = float(all_owed_amount[index].text.strip().replace(',','.'))
+            list_owed_amount.append((amount, name))
+        return sorted(list_owed_amount, key=lambda x : x[0])
 
     def get_persons(self):
         """Returns a dict with the names and telegram_ids of the persons."""
