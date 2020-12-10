@@ -71,7 +71,7 @@ class Parser:
         list_ratio = []
         all_times_cook = self.soup_kosten_page.find('td', text='  Aantal keer gekookt').parent.find_all('td', class_='r')
         all_times_eat = self.soup_kosten_page.find('td', text='  Aantal keer meegegeten').parent.find_all('td', class_='r')
-        for index, name in enumerate(ps.names):
+        for index, name in enumerate(self.names):
             times_cook = int(all_times_cook[index].text)
             times_eat = int(all_times_eat[index].text)
             if times_eat == 0:
@@ -84,7 +84,7 @@ class Parser:
         """Returns a list with the average meal costs per person."""
         list_costs = []
         all_costs = self.soup_kosten_page.find('td', text='  Kookt gemiddeld voor (p.p.)').parent.find_all('td', class_='r')[0:-1]
-        for index, name in enumerate(ps.names):
+        for index, name in enumerate(self.names):
             costs = float(all_costs[index].text.strip().replace(',','.'))
             list_costs.append((costs, name))
         return sorted(list_costs, key=lambda x : x[0])
@@ -93,7 +93,7 @@ class Parser:
         """Returns a list with the cooking points per person."""
         list_points = []
         all_points = self.soup_kosten_page.find_all('td', class_='l', colspan='3')[-1].parent.find_all('td', class_='r')[0:-1]
-        for index, name in enumerate(ps.names):
+        for index, name in enumerate(self.names):
             points = int(all_points[index].text.strip())
             list_points.append((points, name))
         return sorted(list_points, key=lambda x : x[0])
@@ -102,7 +102,7 @@ class Parser:
         """Returns a list with the owed amount per person."""
         list_owed_amount = []
         all_owed_amount = self.soup_kosten_page.find_all('tr', bgcolor='#DDDDDD')[0].find_all('td')[2:]
-        for index, name in enumerate(ps.names):
+        for index, name in enumerate(self.names):
             amount = float(all_owed_amount[index].text.strip().replace(',','.'))
             list_owed_amount.append((amount, name))
         return sorted(list_owed_amount, key=lambda x : x[0])
