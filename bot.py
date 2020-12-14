@@ -156,7 +156,8 @@ dispatcher.add_handler(eat_handler)
 # The unknown_handler must be added last.
 dispatcher.add_handler(unknown_handler)
 
-job_queue.run_daily(reminder_callback, datetime.time(hour=15, tzinfo=pytz.timezone('Europe/Amsterdam')))
+# Send daily reminder at 15h except on Sundays
+job_queue.run_daily(reminder_callback, datetime.time(hour=15, tzinfo=pytz.timezone('Europe/Amsterdam')), (0,1,2,3,4,5))
 
 updater.start_polling()
 updater.idle()
