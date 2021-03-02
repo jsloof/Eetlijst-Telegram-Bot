@@ -81,6 +81,13 @@ def kok_callback(update, context):
     context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
     context.bot.send_message(chat_id=update.effective_chat.id, text=replies.kok(), parse_mode=ParseMode.HTML)
 
+def kok_reminder_callback(context):
+    """The callback function for the kok reminder command."""
+    kok = replies.kok()
+    if 'Er gaat nog niemand koken.' in kok:
+        context.bot.send_chat_action(chat_id=GROUP_CHAT_ID, action=ChatAction.TYPING)
+        context.bot.send_message(chat_id=GROUP_CHAT_ID, text=kok, parse_mode=ParseMode.HTML)
+
 def kookkosten_callback(update, context):
     """The callback function for the kookkosten command."""
     context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
@@ -101,6 +108,7 @@ def public_reminder_callback(context):
     """The callback function for the public reminder."""
     context.bot.send_chat_action(chat_id=GROUP_CHAT_ID, action=ChatAction.TYPING)
     eetlijst = replies.eetlijst()
+    context.job_queue.run_once(kok_reminder_callback, 0)
     for person in eetlijst['unknown_persons']:
         context.job_queue.run_once(individual_callback, 0, context=person)
     context.bot.send_message(chat_id=GROUP_CHAT_ID, text=eetlijst['reply'], parse_mode=ParseMode.HTML)
