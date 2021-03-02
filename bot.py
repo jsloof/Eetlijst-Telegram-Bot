@@ -91,8 +91,14 @@ def kookpunten_callback(update, context):
     context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
     context.bot.send_message(chat_id=update.effective_chat.id, text=replies.kookpunten(), parse_mode=ParseMode.HTML)
 
-def reminder_callback(context):
-    """The callback function for the reminder."""
+def personal_reminder_callback(context):
+    """The callback function for the personal reminder."""
+    eetlijst = replies.eetlijst()
+    for person in eetlijst['unknown_persons']:
+        context.job_queue.run_once(individual_callback, 0, context=person)
+
+def public_reminder_callback(context):
+    """The callback function for the public reminder."""
     context.bot.send_chat_action(chat_id=GROUP_CHAT_ID, action=ChatAction.TYPING)
     eetlijst = replies.eetlijst()
     for person in eetlijst['unknown_persons']:
@@ -156,8 +162,10 @@ dispatcher.add_handler(eat_handler)
 # The unknown_handler must be added last.
 dispatcher.add_handler(unknown_handler)
 
-# Send daily reminder at 15h except on Sundays
-job_queue.run_daily(reminder_callback, datetime.time(hour=15, tzinfo=pytz.timezone('Europe/Amsterdam')), (0,1,2,3,4,5))
+# Send daily personal reminder at 15h except on Sundays
+job_queue.run_daily(personal_reminder_callback, datetime.time(hour=15, tzinfo=pytz.timezone('Europe/Amsterdam')), (0,1,2,3,4,5))
+# Send daily public reminder at 16h except on Sundays
+job_queue.run_daily(public_reminder_callback, datetime.time(hour=16, tzinfo=pytz.timezone('Europe/Amsterdam')), (0,1,2,3,4,5))
 
 updater.start_polling()
 updater.idle()
