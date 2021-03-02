@@ -64,9 +64,9 @@ def kok():
     return reply
 
 def balans():
-    """Replies the owed amount per person."""
+    """Replies the debit/credit per person."""
     reply = '<b>Balans:</b>\n'
-    for amount, name in Parser().get_owed_amount():
+    for amount, name in Parser().get_balance():
         if amount < 0:
             reply += f'<code>-€{"%.2f" % -amount}</code> ({name})\n'
         else:

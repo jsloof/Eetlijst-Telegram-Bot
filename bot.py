@@ -71,7 +71,7 @@ def individual_callback(context):
     person = context.job.context
     if person['telegram_id'] != '':
         context.bot.send_chat_action(chat_id=person['telegram_id'], action=ChatAction.TYPING)
-        custom_keyboard = [['Ik eet mee🍝'], ['Ik eet niet mee🙅🏼‍♂️'], ['Ik kook👨🏼‍🍳']]
+        custom_keyboard = [['Ik eet mee🍔'], ['Ik eet niet mee🙅🏼‍♂️'], ['Ik kook👨🏼‍🍳']]
         reply_markup = ReplyKeyboardMarkup(custom_keyboard)
         context.bot.send_message(chat_id=person['telegram_id'], text=f'{person["name"]}, je moet je nog inschrijven voor de maaltijd!\n' \
             'Je kunt reageren in deze chat.', parse_mode=ParseMode.HTML, reply_markup=reply_markup)

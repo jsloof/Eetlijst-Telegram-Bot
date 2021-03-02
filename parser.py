@@ -1,5 +1,4 @@
 from bs4 import BeautifulSoup
-from selenium import webdriver
 import os, re, requests
 
 class Parser:
@@ -98,8 +97,8 @@ class Parser:
             list_points.append((points, name))
         return sorted(list_points, key=lambda x : x[0])
 
-    def get_owed_amount(self):
-        """Returns a list with the owed amount per person."""
+    def get_balance(self):
+        """Returns a list with the debit/credit per person."""
         list_owed_amount = []
         all_owed_amount = self.soup_kosten_page.find_all('tr', bgcolor='#DDDDDD')[0].find_all('td')[2:]
         for index, name in enumerate(self.names):
@@ -122,11 +121,7 @@ class Parser:
 
     def set_eetlijst(self, person_index, status):
         """Updates the status of the person at Eetlijst."""
-        chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_argument('--disable-dev-shm-usage')
-        chrome_options.binary_location = '/app/.apt/usr/bin/google-chrome'
-        driver = webdriver.Chrome(executable_path='/app/.chromedriver/bin/chromedriver', chrome_options=chrome_options)
-        driver.get(f'http://www.eetlijst.nl/main.php?session_id={self.session_id}&who={person_index}&what={status}')
-        elem = driver.find_element_by_name('submitwithform')
-        elem.click()
-        driver.quit()
+        today = self.soup_main_page.find(lambda tag:tag.name=='option' and 'op' in tag.text)['value']
+        main_url = 'http://eetlijst.nl/main.php'
+        post_data = {'session_id': self.session_id, 'who': person_index, 'what': status, 'day[]': today, 'submitwithform.x': 1}
+        requests.post(main_url, data=post_data)
