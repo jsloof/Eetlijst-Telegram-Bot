@@ -122,7 +122,7 @@ def cook_callback(update, context):
     """The callback function for the cook message."""
     if re.search('niet', update.effective_message.text, re.IGNORECASE) == None:
         context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
-        guests = re.search(r'met(.)* \d+', update.effective_message.text, re.IGNORECASE)
+        guests = re.search(r'\b(met)\b(.)* \d+', update.effective_message.text, re.IGNORECASE)
         if guests != None:
             status = int(guests.group().split()[-1]) + 1
         else:
@@ -132,7 +132,7 @@ def cook_callback(update, context):
 def eat_callback(update, context):
     """The callback function for the eat message."""
     context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
-    guests = re.search(r'met(.)* \d+', update.effective_message.text, re.IGNORECASE)
+    guests = re.search(r'\b(met)\b(.)* \d+', update.effective_message.text, re.IGNORECASE)
     if re.search('niet', update.effective_message.text, re.IGNORECASE) != None:
         status = 0
     elif guests != None:
@@ -153,8 +153,8 @@ kok_handler = CommandHandler('kok', kok_callback)
 kookkosten_handler = CommandHandler('kookkosten', kookkosten_callback)
 kookpunten_handler = CommandHandler('kookpunten', kookpunten_callback)
 verhouding_handler = CommandHandler('verhouding', verhouding_callback)
-cook_handler = MessageHandler(Filters.regex(re.compile(r'(ik).+(kook|koken)', re.IGNORECASE)), cook_callback)
-eat_handler = MessageHandler(Filters.regex(re.compile(r'(ik).+((eet).+(mee)|(mee-eten|meeeten))', re.IGNORECASE)), eat_callback)
+cook_handler = MessageHandler(Filters.regex(re.compile(r'\b(ik)\b.+\b(kook|koken)\b', re.IGNORECASE)), cook_callback)
+eat_handler = MessageHandler(Filters.regex(re.compile(r'\b(ik)\b.+(\b(eet)\b.+\b(mee)\b|\b(mee-eten|meeeten)\b)', re.IGNORECASE)), eat_callback)
 unknown_handler = MessageHandler(Filters.command, unknown_callback)
 
 dispatcher.add_error_handler(error_callback)
