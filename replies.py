@@ -1,120 +1,134 @@
-from parser import Parser
+from parser import Parser, Person
+from telegram.utils.helpers import mention_html
+from typing import List, Tuple
 
-def eetlijst():
+
+def eetlijst() -> Tuple[str, List[Person]]:
     """Replies a dict with the status per person and the unknown persons."""
-    ps = Parser()
-    eaters, cook, absent, unknown = ps.eetlijst
-    present = eaters + cook
+    p = Parser()
+    eat, cook, unknown = p.get_statuses()
+    present = eat + cook
     number = len(present)
-    for person in ps.names:
+    num_eat = len(eat)
+    num_cook = len(cook)
+    num_unknown = len(unknown)
+    for person in p.get_group():
         guests = present.count(person) - 1
         if guests > 0:
             if person in cook:
                 if guests == 1:
-                    eaters[eaters.index(person)] = f'1 mee-eter van {person}'
+                    eat[eat.index(person)] = f'1 mee-eter van {person}'
                 elif guests == 2:
-                    eaters[eaters.index(person)] = f'2 mee-eters van {person}'
+                    eat[eat.index(person)] = f'2 mee-eters van {person}'
                 else:
-                    eaters[eaters.index(person)] = f'3 (of meer) mee-eters van {person}'
+                    eat[eat.index(person)] = f'3 (of meer) mee-eters van {person}'
                     number = f'{number} (of meer)'
             else:
                 if guests == 1:
-                    eaters[eaters.index(person)] = f'{person} +1 mee-eter'
+                    eat[eat.index(person)] = f'{person} +1 mee-eter'
                 elif guests == 2:
-                    eaters[eaters.index(person)] = f'{person} +2 mee-eters'
+                    eat[eat.index(person)] = f'{person} +2 mee-eters'
                 else:
-                    eaters[eaters.index(person)] = f'{person} +3 (of meer) mee-eters'
+                    eat[eat.index(person)] = f'{person} +3 (of meer) mee-eters'
                     number = f'{number} (of meer)'
-            eaters = list(filter((person).__ne__, eaters))
+            eat = list(filter(person.__ne__, eat))
     reply = ''
-    unknown_persons = []
-    if len(cook) > 0:
-        reply += f'{names_to_str(cook)}'
-        reply += ' gaat' if len(cook) == 1 else ' gaan'
+    if num_cook > 0:
+        reply += f'{list_to_str(cook)}'
+        reply += ' gaat' if num_cook == 1 else ' gaan'
         reply += ' koken voor'
-        reply += ' tot nu toe' if len(unknown) > 0 else ''
+        reply += ' tot nu toe' if num_unknown > 0 else ''
         reply += ' alleen zichzelf.\n' if number == 1 else f' {number} personen.\n'
-    if len(eaters) > 0:
-        reply += f'{names_to_str(eaters)}'
-        reply += ' eet' if len(eaters) == 1 else ' eten'
+    if num_eat > 0:
+        reply += f'{list_to_str(eat)}'
+        reply += ' eet' if num_eat == 1 else ' eten'
         reply += ' mee.\n'
-    if len(unknown) > 0:
-        reply += f'{names_to_str(unknown)}'
-        reply += ' moet' if len(unknown) == 1 else ' moeten'
+    if num_unknown > 0:
+        reply += f'{list_to_str(unknown)}'
+        reply += ' moet' if num_unknown == 1 else ' moeten'
         reply += ' zich nog inschrijven.\n'
-        for name in unknown:
-            unknown_persons.append({'name': name, 'telegram_id': ps.persons[name]})
     if reply == '':
         reply = 'Niemand eet mee.'
-    return {'reply': reply, 'unknown_persons': unknown_persons}
+    return reply, p.get_unknown()
 
-def kok():
+
+def kok() -> str:
     """Replies the (suggested) cook."""
-    ps = Parser()
-    cook = ps.get_cook()
-    if len(cook) == 0:
-        if len(ps.get_eaters() + ps.get_unknown()) == 0:
+    p = Parser()
+    cook = p.get_cook()
+    num_cook = len(cook)
+    if num_cook == 0:
+        if len(p.get_eaters() + p.get_unknown()) == 0:
             reply = 'Niemand eet mee.'
         else:
-            reply = f'Er gaat nog niemand koken.\n{ps.get_cook_suggestion()} staat het laagst qua verhouding.'
+            person = p.get_cook_suggestion()
+            if person.get_user_id():
+                person = mention_html(person.get_user_id(), person.get_name())
+            reply = f'Er gaat nog niemand koken.\n{person} staat het laagst qua verhouding.'
     else:
-        reply = f'{names_to_str(cook)}'
-        reply += ' gaat' if len(cook) == 1 else ' gaan'
+        reply = f'{list_to_str(cook)}'
+        reply += ' gaat' if num_cook == 1 else ' gaan'
         reply += ' koken.'
     return reply
 
-def balans():
+
+def balans() -> str:
     """Replies the debit/credit per person."""
+    p = Parser()
     reply = '<b>Balans:</b>\n'
-    for amount, name in Parser().get_balance():
+    for amount, person in p.get_balance():
         if amount < 0:
-            reply += f'<code>-€{"%.2f" % -amount}</code> ({name})\n'
+            reply += f'<code>-€{"%.2f" % -amount}</code> ({person})\n'
         else:
-            reply += f'<code> €{"%.2f" % amount}</code> ({name})\n'
+            reply += f'<code> €{"%.2f" % amount}</code> ({person})\n'
     return reply
 
-def kookkosten():
+
+def kookkosten() -> str:
     """Replies the average meal costs per person."""
+    p = Parser()
     reply = '<b>Gemiddelde kookkosten:</b>\n'
-    for costs, name in Parser().get_costs():
-        reply += f'<code>€{"%.2f" % costs}</code> ({name})\n'
+    for costs, person in p.get_costs():
+        reply += f'<code>€{"%.2f" % costs}</code> ({person})\n'
     return reply
 
-def kookpunten():
+
+def kookpunten() -> str:
     """Replies the cooking points per person."""
+    p = Parser()
     reply = '<b>Kookpunten:</b>\n'
-    for points, name in Parser().get_points():
+    for points, person in p.get_points():
         reply += '<code>' if points < 0 else '<code> '
-        reply += f'{points}</code> ({name})\n'
+        reply += f'{points}</code> ({person})\n'
     return reply
 
-def verhouding():
+
+def verhouding() -> str:
     """Replies the ratio cook/eat per person."""
+    p = Parser()
     reply = '<b>Verhouding koken/eten:</b>\n'
-    for ratio, name in Parser().get_ratios():
-        reply += f'<code>{"%.3f" % ratio}</code> ({name})\n'
+    for ratio, person in p.get_ratios():
+        reply += f'<code>{"%.3f" % ratio}</code> ({person})\n'
     return reply
 
-def names_to_str(list):
-    return ' en'.join(str(list).replace('[','').replace('\'','').replace(']','').rsplit(',', 1))
 
-def set_eetlijst(user_id, status):
+def set_eetlijst(user_id: int, status: int) -> str:
     """Replies the status update of the person."""
-    ps = Parser()
-    if status > 0 and len(ps.get_cook()) > 0:
+    p = Parser()
+    if status > 0 and len(p.get_cook()) > 0:
         return 'Sorry, er gaat al iemand koken.'
     else:
+        person = next((person for person in p.get_group() if person.get_user_id() == user_id), None)
+        if person is None:
+            return 'Sorry, je hebt hier geen toestemming voor.'
         try:
-            user_ids = list(ps.persons.values())
-            person_index = user_ids.index(str(user_id))
-            name = ps.names[person_index]
             if status < 0:
-                reply = f'Oke, ik zet {name} op mee-eten'
+                reply = f'Oke, ik zet {person} op mee-eten'
             elif status > 0:
-                reply = f'Oke, ik zet {name} op koken'
+                reply = f'Oke, ik zet {person} op koken'
             else:
-                ps.set_eetlijst(person_index, 0)
-                return f'Oke, ik schrijf {name} uit.'
+                p.set_status(person, 0)
+                return f'Oke, ik schrijf {person} uit.'
             total = abs(status)
             if total == 2:
                 reply += ' met 1 gast'
@@ -122,11 +136,11 @@ def set_eetlijst(user_id, status):
                 reply += ' met 2 gasten'
             elif total > 3:
                 reply += ' met 3 (of meer) gasten'
-                if status < 0:
-                    status = -4
-                else:
-                    status = 4
-            ps.set_eetlijst(person_index, status)
-        except:
+            p.set_status(person, status)
+        except ConnectionError:
             return 'Sorry, het is niet gelukt om je status aan te passen.'
-    return reply + '.'
+    return reply
+
+
+def list_to_str(names: list) -> str:
+    return ', '.join([str(name) for name in names[:-2]] + [' en '.join([str(name) for name in names[-2:]])])

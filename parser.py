@@ -1,127 +1,177 @@
 from bs4 import BeautifulSoup
-import os, re, requests
+from datetime import datetime
+from os import getenv
+from pytz import timezone
+from requests import get, post
+from typing import List, Optional, Tuple
+from urllib.parse import parse_qs, urlparse
+
+
+class Person:
+    def __init__(self, index: int, name: str, user_id: Optional[int] = None):
+        self._index: int = index
+        self._name: str = name
+        self._user_id: Optional[int] = user_id
+
+    def __eq__(self, other):
+        if isinstance(other, Person):
+            return self._index == other._index and self._name == other._name and self._user_id == other._user_id
+        return False
+
+    def __str__(self):
+        return self._name
+
+    def __hash__(self):
+        return hash(self._index)
+
+    def get_index(self) -> int:
+        return self._index
+
+    def get_name(self) -> str:
+        return self._name
+
+    def get_user_id(self) -> Optional[int]:
+        return self._user_id
+
 
 class Parser:
-
     def __init__(self):
-        """Initiates the Parser object."""
-        eetlijst_user = os.environ['EETLIJST_USER']
-        eetlijst_pass = os.environ['EETLIJST_PASS']
+        username = getenv('EETLIJST_USER')
+        if username is None:
+            raise LookupError('Could not find EETLIJST_USER in config vars.')
+        password = getenv('EETLIJST_PASS')
+        if password is None:
+            raise LookupError('Could not find EETLIJST_PASS in config vars.')
 
-        login_url = 'http://eetlijst.nl/login.php'
-        login_data = {'login': eetlijst_user, 'pass': eetlijst_pass}
-        main_page = requests.post(login_url, data=login_data)
-        self.soup_main_page = BeautifulSoup(main_page.content, 'html.parser')
+        response = post('https://eetlijst.nl/login.php', {'login': username, 'pass': password})
+        if not response.ok:
+            raise ConnectionError('Not possible to login.')
 
-        kosten_url = self.soup_main_page.find_all('a')[2]['href']
-        kosten_page = requests.get('http://eetlijst.nl/' + kosten_url)
-        self.soup_kosten_page = BeautifulSoup(kosten_page.content, 'html.parser')
-        self.session_id = re.split('\W', kosten_url)[-1]
+        session_id = parse_qs(urlparse(response.url).query).get('session_id')
+        if session_id is None:
+            raise ConnectionRefusedError('Incorrect username and/or password.')
+        elif type(session_id) != list or len(session_id) < 1:
+            raise LookupError('Could not find session ID.')
+        else:
+            self._session_id = session_id[0]
 
-        self.persons = self.get_persons()
-        self.names = list(self.persons.keys())
-        self.eetlijst = self.get_eetlijst()
+        self._main_page = BeautifulSoup(response.content, 'html.parser')
+        self._cost_page = None
+        self._statuses: list = []
+        self._group: list = []
 
-    def get_eetlijst(self):
-        """Returns the eetlijst of today."""
-        eaters, cook, absent, unknown = [], [], [], []
-        list_images = self.soup_main_page.find_all('td', class_='r')[1].parent.find_all('img')
-        for image in list_images:
-            choice = image['src']
-            person = re.split('\s', image['title'])[0]
-            if choice == 'eet.gif':
-                eaters.append(person)
-            elif choice == 'kook.gif':
-                cook.append(person)
-            elif choice == 'nop.gif':
-                absent.append(person)
-            else:
-                person = self.names[len(set(eaters + cook + absent + unknown))]
-                unknown.append(person)
-        return eaters, cook, absent, unknown
+        row = self.get_main_page().find_all('a', class_='th')[:-2]
+        for cell in row:
+            index = len(self.get_group())
+            name = cell.text
+            user_id = int(getenv(name))
+            self._group.append(Person(index, name, user_id))
 
-    def get_eaters(self):
+    def get_main_page(self) -> BeautifulSoup:
+        return self._main_page
+
+    def get_cost_page(self) -> BeautifulSoup:
+        if self._cost_page is None:
+            response = get(f'https://eetlijst.nl/kosten.php?session_id={self._session_id}')
+            self._cost_page = BeautifulSoup(response.content, 'html.parser')
+        return self._cost_page
+
+    def get_statuses(self) -> (List[Person], List[Person], List[Person]):
+        """Returns the statuses of today."""
+        eat, cook, unknown = [], [], []
+        row = self.get_main_page().find_all('table')[3].find_all('tr')[1].find_all('td')[1:]
+        for index, cell in enumerate(row):
+            images = cell.find_all('img')
+            for image in images:
+                src = image['src']
+                if 'eet.gif' == src:
+                    eat.append(self.get_group()[index])
+                elif 'kook.gif' == src:
+                    cook.append(self.get_group()[index])
+                elif 'leeg.gif' == src:
+                    unknown.append(self.get_group()[index])
+        return eat, cook, unknown
+
+    def get_eaters(self) -> List[Person]:
         """Returns a list with the eaters."""
-        return self.eetlijst[0]
+        return self.get_statuses()[0]
 
-    def get_cook(self):
+    def get_cook(self) -> List[Person]:
         """Returns a list with the cook(s)."""
-        return self.eetlijst[1]
+        return self.get_statuses()[1]
 
-    def get_absent(self):
-        """Returns a list with the absent persons."""
-        return self.eetlijst[2]
-
-    def get_unknown(self):
+    def get_unknown(self) -> List[Person]:
         """Returns a list with the persons with unknown status."""
-        return self.eetlijst[3]
+        return self.get_statuses()[2]
 
-    def get_cook_suggestion(self):
+    def get_cook_suggestion(self) -> Optional[Person]:
         """Returns the name of the person with the lowest cook/eat ratio."""
-        potential_cooks = list(set(self.get_eaters() + self.get_unknown()))
-        name = ''
-        for ratio, name in self.get_ratios():
-            if name in potential_cooks:
-                break
-        return name
+        potential_cooks = set(self.get_eaters() + self.get_unknown())
+        for ratio, person in self.get_ratios():
+            if person in potential_cooks:
+                return person
+        return None
 
-    def get_ratios(self):
+    def get_ratios(self) -> List[Tuple[float, Person]]:
         """Returns a list with the ratio cook/eat per person."""
         list_ratio = []
-        all_times_cook = self.soup_kosten_page.find('td', text='  Aantal keer gekookt').parent.find_all('td', class_='r')
-        all_times_eat = self.soup_kosten_page.find('td', text='  Aantal keer meegegeten').parent.find_all('td', class_='r')
-        for index, name in enumerate(self.names):
-            times_cook = int(all_times_cook[index].text)
-            times_eat = int(all_times_eat[index].text)
-            if times_eat == 0:
-                list_ratio.append((0.0, name))
+        times_cook = self.get_cost_page().find('td', text='  Aantal keer gekookt').parent.find_all('td', class_='r')
+        times_eat = self.get_cost_page().find('td', text='  Aantal keer meegegeten').parent.find_all('td', class_='r')
+        for person in self.get_group():
+            number_cook = int(times_cook[person.get_index()].text)
+            number_eat = int(times_eat[person.get_index()].text)
+            if number_eat == 0:
+                list_ratio.append((0.0, person))
             else:
-                list_ratio.append((times_cook / times_eat, name))
-        return sorted(list_ratio, key=lambda x : x[0])
+                list_ratio.append((number_cook / number_eat, person))
+        return sorted(list_ratio, key=lambda x: x[0])
 
-    def get_costs(self):
+    def get_costs(self) -> List[Tuple[float, Person]]:
         """Returns a list with the average meal costs per person."""
         list_costs = []
-        all_costs = self.soup_kosten_page.find('td', text='  Kookt gemiddeld voor (p.p.)').parent.find_all('td', class_='r')[0:-1]
-        for index, name in enumerate(self.names):
-            costs = float(all_costs[index].text.strip().replace(',','.'))
-            list_costs.append((costs, name))
-        return sorted(list_costs, key=lambda x : x[0])
+        costs = self.get_cost_page().find('td', text='  Kookt gemiddeld voor (p.p.)').parent.find_all('td', class_='r')[:-1]
+        for person in self.get_group():
+            amount = float(costs[person.get_index()].text.strip().replace(',', '.'))
+            list_costs.append((amount, person))
+        return sorted(list_costs, key=lambda x: x[0])
 
-    def get_points(self):
+    def get_points(self) -> List[Tuple[int, Person]]:
         """Returns a list with the cooking points per person."""
         list_points = []
-        all_points = self.soup_kosten_page.find_all('td', class_='l', colspan='3')[-1].parent.find_all('td', class_='r')[0:-1]
-        for index, name in enumerate(self.names):
-            points = int(all_points[index].text.strip())
-            list_points.append((points, name))
-        return sorted(list_points, key=lambda x : x[0])
+        points = self.get_cost_page().find_all('td', class_='l', colspan='3')[-1].parent.find_all('td', class_='r')[:-1]
+        for person in self.get_group():
+            number = int(points[person.get_index()].text.strip())
+            list_points.append((number, person))
+        return sorted(list_points, key=lambda x: x[0])
 
-    def get_balance(self):
+    def get_balance(self) -> List[Tuple[float, Person]]:
         """Returns a list with the debit/credit per person."""
         list_owed_amount = []
-        all_owed_amount = self.soup_kosten_page.find_all('tr', bgcolor='#DDDDDD')[0].find_all('td')[2:]
-        for index, name in enumerate(self.names):
-            amount = float(all_owed_amount[index].text.strip().replace(',','.'))
-            list_owed_amount.append((amount, name))
-        return sorted(list_owed_amount, key=lambda x : x[0])
+        owed_amount = self.get_cost_page().find_all('tr', bgcolor='#DDDDDD')[0].find_all('td')[2:]
+        for person in self.get_group():
+            amount = float(owed_amount[person.get_index()].text.strip().replace(',', '.'))
+            list_owed_amount.append((amount, person))
+        return sorted(list_owed_amount, key=lambda x: x[0])
 
-    def get_persons(self):
-        """Returns a dict with the names and telegram_ids of the persons."""
-        persons = {}
-        all_names = self.soup_kosten_page.find('th', colspan='3').parent.find_all('th')[1:-1]
-        for name in all_names:
-            stripped_name = name.text.strip()
-            try:
-                telegram_id = os.environ[stripped_name]
-            except:
-                telegram_id = ''
-            persons[stripped_name] = telegram_id
-        return persons
+    def get_group(self) -> List[Person]:
+        return self._group
 
-    def set_eetlijst(self, person_index, status):
+    def set_status(self, person: Person, status: int):
         """Updates the status of the person at Eetlijst."""
-        today = self.soup_main_page.find(lambda tag:tag.name=='option' and 'op' in tag.text)['value']
-        main_url = 'http://eetlijst.nl/main.php'
-        post_data = {'session_id': self.session_id, 'who': person_index, 'what': status, 'day[]': today, 'submitwithform.x': 1}
-        requests.post(main_url, data=post_data)
+        index = person.get_index()
+        if status > 4:
+            status = 4
+        elif status < -4:
+            status = -4
+        now = datetime.now(timezone('Europe/Amsterdam'))
+        today = int(now.replace(hour=0, minute=0, second=0, microsecond=0).timestamp())
+        data = {
+            'session_id': self._session_id,
+            'who': index,
+            'what': status,
+            'day[]': today,
+            'submitwithform.x': 1
+        }
+        response = post('https://eetlijst.nl/main.php', data)
+        if not response.ok:
+            raise ConnectionError('Not possible to change status.')
