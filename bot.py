@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 from datetime import time
 from html import escape
 from json import dumps
